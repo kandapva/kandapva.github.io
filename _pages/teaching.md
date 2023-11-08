@@ -2,11 +2,22 @@
 layout: page
 permalink: /teaching/
 title: teaching
-description: Materials for courses you taught. Replace this text with your description.
+description: Materials for courses handled.
 nav: true
-nav_order: 5
+nav_order: 2
 ---
+<hr>
 
-For now, this page is assumed to be a static description of your courses. You can convert it to a collection similar to `_projects/` so that you can have a dedicated page for each course.
+# DEC 2023 - MAY 2024
 
-Organize your courses by years, topics, or universities, however you like!
+Provisional list of courses to be handled this Fall
+
+- CS2004 Design and Analysis of Algorithms
+
+- CS3658 High-Performance Computing
+
+<hr>
+# OCT 2023 - JAN 2024
+
+- [CS1801 Programming in C Lab](https://kd357.github.io/courses/cs1801-odd-2023)
+
