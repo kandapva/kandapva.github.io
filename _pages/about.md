@@ -2,13 +2,14 @@
 layout: about
 title: about
 permalink: /
-subtitle: <a href='https://www.snuchennai.edu.in/'>Assistant Professor</a>, Shiv Nadar University, Chennai.
+subtitle: <a href='https://www.snuchennai.edu.in/dr-v-a-kandappan/'>Assistant Professor, Shiv Nadar University, Chennai.</a>
 
 profile:
   align: right
   image: prof_pic.jpg
   image_circular: false # crops the image to make it circular
   more_info: >
+    <p>207, Academic Building 2</p>
     <p>Shiv Nadar University - Chennai</p>
     <p>Kalavakkam - 603110</p>
 
@@ -18,8 +19,8 @@ selected_papers: true # includes a list of papers marked as "selected={true}"
 social: true  # includes social icons at the bottom of the page
 ---
 
-Dr. V.A. Kandappan began his academic journey as an Assistant Professor in the Department of Computer Science Engineering at Shiv Nadar University, Chennai, in October 2023. He pursued his PhD at the Computational and Data Science Department in IISc Bangalore. He later moved to the Department of Mathematics at IIT Madras, where he successfully obtained his Ph.D. His doctoral research, supervised by Dr Sivaram Ambikasaran, focused on developing a new class of fast matrix algorithms for N-body problems in 2D and 3D, with complexity, rank, and error estimates.
+Dr. V.A. Kandappan began his academic journey as an Assistant Professor in the Department of Computer Science Engineering at Shiv Nadar University, Chennai, in October 2023. He pursued his PhD at the Computational and Data Science Department in IISc Bangalore. He later moved to the [Department of Mathematics at IIT Madras](https://math.iitm.ac.in/ma16d300), where he successfully obtained his Ph.D. His doctoral research, supervised by [Dr Sivaram Ambikasaran](https://sivaramambikasaran.com/), focused on developing a new class of fast matrix algorithms for N-body problems in 2D and 3D, with complexity, rank, and error estimates.
 
-He holds a Master's degree in Engineering (Power Systems) from the College of Engineering Guindy, Anna University, and a Bachelor's degree in Engineering (Electrical and Electronics) from MEPCO Schlenk Engineering College. Prior to pursuing his PhD, he worked as a Graduate Engineer at IBM India Private Limited, specializing in Software Testing. His research interests include (not limited to) High-performance computing applications, Fast matrix algorithms, and Applications of Machine learning, among others.
+He holds a Master's degree in Engineering (Power Systems) from the [College of Engineering Guindy, Anna University](https://www.annauniv.edu/EEE/powersystems.php), and a Bachelor's degree in Engineering (Electrical and Electronics) from [MEPCO Schlenk Engineering College](https://mepcoeng.ac.in/Home.aspx). Prior to pursuing his PhD, he worked as a Graduate Engineer at IBM India Private Limited, specializing in Software Testing. His research interests include (not limited to) High-performance computing applications, Fast matrix algorithms, and Applications of Machine learning, among others.
 
 Apart from academics, he enjoys following NBA, F1, and chess. He is also a big fan of Sheldon Cooper. "Bazinga!"**2
