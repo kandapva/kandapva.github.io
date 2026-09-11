@@ -8,6 +8,18 @@ nav_order: 2
 ---
 <hr>
 
+# AUG 2026 - DEC 2026
+
+- [25CS2033 Theory of Computation](/courses/25cs2033-odd-2026)
+
+- [26AI5701 Advanced Data Structures and Algorithms](/courses/26ai5701-odd-2026)
+
+- [CS3015 High Performance Computing and Big Data](/courses/cs3015-odd-2026)
+
+- [CS3811 HPC and Big Data Lab](/courses/cs3811-odd-2026)
+
+<hr>
+
 # DEC 2023 - MAY 2024
 
 - [CS2004 Design and Analysis of Algorithms](/courses/cs2004-even-2024)

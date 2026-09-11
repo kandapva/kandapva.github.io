@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automata Flashcards</title>
+<meta name="description" content="Recall drills on finite automata — DFAs, NFAs, minimization, and the pumping lemma — organized by lecture.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #f6f1f4;
+    --surface: #ffffff;
+    --surface-2: #fbf6f9;
+    --ink: #241f2e;
+    --ink-soft: #6d6278;
+    --ink-faint: #a89cae;
+    --line: #e6dce3;
+    --accent: #d92d78;
+    --accent-ink: #ffffff;
+    --accent-soft: #fbe1ec;
+    --good: #1f8f6d;
+    --good-soft: #e1f3ec;
+    --shadow: 220 30% 20%;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17141c;
+      --surface: #201b27;
+      --surface-2: #262030;
+      --ink: #f1ecf3;
+      --ink-soft: #b3a7bd;
+      --ink-faint: #6f6478;
+      --line: #362e3f;
+      --accent: #ff6fa8;
+      --accent-ink: #201018;
+      --accent-soft: #3a2231;
+      --good: #52d8ab;
+      --good-soft: #1b3129;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17141c;
+    --surface: #201b27;
+    --surface-2: #262030;
+    --ink: #f1ecf3;
+    --ink-soft: #b3a7bd;
+    --ink-faint: #6f6478;
+    --line: #362e3f;
+    --accent: #ff6fa8;
+    --accent-ink: #201018;
+    --accent-soft: #3a2231;
+    --good: #52d8ab;
+    --good-soft: #1b3129;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  .page {
+    width: 100%;
+    max-width: 640px;
+    padding: 2.5rem 1.25rem 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  /* ---------- header ---------- */
+  header { display: flex; flex-direction: column; gap: 0.35rem; }
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  h1 {
+    margin: 0;
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(1.7rem, 5vw, 2.2rem);
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+  header p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.94rem;
+    line-height: 1.5;
+    max-width: 52ch;
+  }
+
+  /* ---------- deck bar ---------- */
+  .deck-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .deck-select-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  select {
+    appearance: none;
+    font-family: "Public Sans", sans-serif;
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0.6rem 2.1rem 0.6rem 0.9rem;
+    cursor: pointer;
+  }
+  select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .deck-select-wrap::after {
+    content: "";
+    position: absolute;
+    right: 0.85rem;
+    width: 0.5em;
+    height: 0.5em;
+    border-right: 2px solid var(--ink-soft);
+    border-bottom: 2px solid var(--ink-soft);
+    transform: rotate(45deg);
+    pointer-events: none;
+  }
+  .stat-chip {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--good);
+    background: var(--good-soft);
+    border-radius: 999px;
+    padding: 0.42rem 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    white-space: nowrap;
+  }
+  .stat-chip .ring {
+    width: 0.7em; height: 0.7em; border-radius: 50%;
+    border: 2px solid var(--good);
+    position: relative;
+    flex: none;
+  }
+  .stat-chip .ring::after {
+    content: ""; position: absolute; inset: 2px;
+    border-radius: 50%; border: 1.5px solid var(--good);
+  }
+  .shuffle-btn {
+    margin-left: auto;
+    font-family: "Public Sans", sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.5rem 0.9rem;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 0.4em;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .shuffle-btn svg { width: 14px; height: 14px; }
+  .shuffle-btn[aria-pressed="true"] {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .shuffle-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- card stage ---------- */
+  .stage { display: flex; flex-direction: column; gap: 0.9rem; }
+  .position-line {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    display: flex;
+    justify-content: space-between;
+  }
+  .card-scene {
+    perspective: 1600px;
+  }
+  .card {
+    position: relative;
+    width: 100%;
+    min-height: 300px;
+    cursor: pointer;
+  }
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    transition: transform 0.5s cubic-bezier(.4,.2,.2,1);
+    transform-style: preserve-3d;
+  }
+  .card.flipped .card-inner { transform: rotateY(180deg); }
+  @media (prefers-reduced-motion: reduce) {
+    .card-inner { transition: none; }
+  }
+  .face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    box-shadow: 0 1px 2px hsl(var(--shadow) / 0.06), 0 8px 24px hsl(var(--shadow) / 0.08);
+    padding: 1.7rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .face.back {
+    transform: rotateY(180deg);
+    background: var(--surface-2);
+  }
+  /* index-card corner fold, front face only */
+  .face.front::before {
+    content: "";
+    position: absolute;
+    top: 0; right: 0;
+    width: 26px; height: 26px;
+    background: linear-gradient(135deg, transparent 50%, var(--bg) 50.5%);
+    border-radius: 0 18px 0 12px;
+  }
+  .face-tag {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    display: flex;
+    align-items: baseline;
+    gap: 0.5em;
+  }
+  .face-tag .lec-topic { color: var(--ink-faint); font-weight: 500; }
+  .back .face-tag { color: var(--good); }
+  .face-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+  .face.front .face-body {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: clamp(1.15rem, 3.2vw, 1.4rem);
+    font-weight: 500;
+    line-height: 1.42;
+    text-wrap: balance;
+  }
+  .face.back .face-body {
+    font-size: 1.02rem;
+    line-height: 1.56;
+    color: var(--ink);
+  }
+  .face-hint {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    text-align: right;
+  }
+
+  /* ---------- controls ---------- */
+  .controls {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto auto;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .ctl-btn {
+    font-family: "Public Sans", sans-serif;
+    font-weight: 600;
+    font-size: 0.88rem;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    padding: 0.7rem 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 0.4em;
+    transition: transform 0.1s, background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .ctl-btn:active { transform: translateY(1px); }
+  .ctl-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .ctl-btn.icon { padding: 0.7rem 0.85rem; }
+  .ctl-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    grid-column: 3;
+    justify-self: center;
+    padding: 0.7rem 1.6rem;
+  }
+  .ctl-btn.know { grid-column: 4; }
+  .ctl-btn.know[aria-pressed="true"] {
+    background: var(--good-soft);
+    border-color: var(--good);
+    color: var(--good);
+  }
+  .ctl-btn.next { grid-column: 5; }
+  .ctl-btn.prev { grid-column: 1; }
+  .ctl-btn svg { width: 16px; height: 16px; }
+
+  /* ---------- progress dots ---------- */
+  .dots-wrap { display: flex; flex-direction: column; gap: 0.55rem; }
+  .dots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    border: 1.6px solid var(--ink-faint);
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    position: relative;
+  }
+  .dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .dot.known { border-color: var(--good); }
+  .dot.known::after {
+    content: ""; position: absolute; inset: 2.5px;
+    border-radius: 50%; border: 1.4px solid var(--good);
+  }
+  .dot.current { border-color: var(--accent); background: var(--accent); transform: scale(1.2); }
+  .legend {
+    display: flex; gap: 1.1rem; flex-wrap: wrap;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 0.4em; }
+  .legend .dot { cursor: default; transform: none; }
+
+  footer {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    text-align: center;
+    letter-spacing: 0.01em;
+  }
+  footer kbd {
+    font-family: inherit;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 0.05em 0.4em;
+  }
+
+  @media (max-width: 420px) {
+    .controls { grid-template-columns: auto 1fr auto; grid-template-rows: auto auto; row-gap: 0.5rem; }
+    .ctl-btn.prev { grid-column: 1; grid-row: 1; }
+    .ctl-btn.next { grid-column: 3; grid-row: 1; }
+    .ctl-btn.primary { grid-column: 2; grid-row: 1; }
+    .ctl-btn.know { grid-column: 1 / -1; grid-row: 2; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header>
+    <div class="eyebrow">Theory of Computation &middot; ODD 2026</div>
+    <h1>Automata Flashcards</h1>
+    <p>Recall drills on finite automata &mdash; from the turnstile that opens the topic to the pumping
+      lemma that closes it. Pick a lecture below, or study the whole run.</p>
+  </header>
+
+  <div class="deck-bar">
+    <div class="deck-select-wrap">
+      <select id="deck-select" aria-label="Choose a lecture deck"></select>
+    </div>
+    <div class="stat-chip"><span class="ring"></span><span id="stat-text">0/0 mastered</span></div>
+    <button class="shuffle-btn" id="shuffle-btn" aria-pressed="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+      Shuffle
+    </button>
+  </div>
+
+  <div class="stage">
+    <div class="position-line">
+      <span id="position-text">&rarr; card 1 of 1</span>
+      <span id="deck-title-text">&mdash;</span>
+    </div>
+    <div class="card-scene">
+      <div class="card" id="card" tabindex="0" role="button" aria-label="Flashcard, press space or click to flip">
+        <div class="card-inner" id="card-inner">
+          <div class="face front">
+            <div class="face-tag"><span id="front-lec">L5</span><span class="lec-topic" id="front-topic">Introduction to Finite Automata</span></div>
+            <div class="face-body" id="front-text">Loading&hellip;</div>
+            <div class="face-hint">tap card or press space to flip</div>
+          </div>
+          <div class="face back">
+            <div class="face-tag"><span>ANSWER</span></div>
+            <div class="face-body" id="back-text">Loading&hellip;</div>
+            <div class="face-hint">tap card to flip back</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="ctl-btn icon prev" id="prev-btn" aria-label="Previous card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <button class="ctl-btn primary" id="flip-btn">Flip</button>
+      <button class="ctl-btn know" id="know-btn" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        Got it
+      </button>
+      <button class="ctl-btn icon next" id="next-btn" aria-label="Next card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="dots-wrap">
+    <div class="dots" id="dots"></div>
+    <div class="legend">
+      <span><span class="dot"></span> new</span>
+      <span><span class="dot known"></span> mastered</span>
+      <span><span class="dot current"></span> current</span>
+    </div>
+  </div>
+
+  <footer>
+    <kbd>&larr;</kbd> <kbd>&rarr;</kbd> navigate &nbsp;&middot;&nbsp; <kbd>space</kbd> flip &nbsp;&middot;&nbsp; <kbd>k</kbd> mark known
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var LECTURES = [
+    { code: "L5",  title: "Introduction to Finite Automata" },
+    { code: "L6",  title: "Constructing Deterministic Finite Automata" },
+    { code: "L7",  title: "Nondeterministic Finite Automata" },
+    { code: "L8",  title: "Equivalence of Finite Automata" },
+    { code: "L9",  title: "DFA Minimization & Myhill–Nerode" },
+    { code: "L10", title: "Regex to Automata & Pumping Lemma" }
+  ];
+  var TITLE_BY_CODE = {};
+  LECTURES.forEach(function (l) { TITLE_BY_CODE[l.code] = l.title; });
+
+  var CARDS = [
+    // ---------------- L5 ----------------
+    { id: "L5-1", lec: "L5", q: "What is a “state” supposed to capture, in the idea behind a finite state machine?", a: "Not a record of the past, but exactly the information about the past that is sufficient to determine what happens next — nothing more." },
+    { id: "L5-2", lec: "L5", q: "Define a finite state machine (FSM), informally.", a: "A device that at every instant is in exactly one of a finite set of states. Each input symbol, combined with the current state, determines the next state via a transition, and no other memory is kept." },
+    { id: "L5-5", lec: "L5", q: "Give the formal 5-tuple definition of a DFA.", a: "M = (Q, Σ, δ, q₀, F): Q a finite set of states, Σ a finite input alphabet, δ: Q×Σ→Q the transition function, q₀∈Q the initial state, F⊆Q the accepting states." },
+    { id: "L5-6", lec: "L5", q: "What exactly does “deterministic” mean for δ in a DFA?", a: "On every state and every input symbol, exactly one transition applies — never zero, never more than one. δ is a genuine total function Q×Σ→Q." },
+    { id: "L5-7", lec: "L5", q: "Define L(M) for a DFA M.", a: "L(M) = { w ∈ Σ* : M accepts w } — the set of all strings that drive M from q₀ to some state in F." },
+    { id: "L5-8", lec: "L5", q: "A transition table and a transition diagram both record δ. What's the difference in who reads each?", a: "A transition table (states as rows, symbols as columns) is the format algorithms read directly. A transition diagram (circles, double circles for F, labeled arrows) is the format a human reads directly — neither is more “correct”; both carry the same δ." },
+    { id: "L5-9", lec: "L5", q: "When does a DFA accept the empty string ε?", a: "Exactly when q₀ ∈ F. Reading no symbols means the machine never leaves q₀, so acceptance of ε depends only on whether the start state itself is accepting." },
+
+    // ---------------- L6 ----------------
+    { id: "L6-1", lec: "L6", q: "How does an NFA's transition function differ from a DFA's, in what it returns?", a: "δ: Q×Σ→𝒫(Q) — it names a set of next states (possibly empty, possibly more than one), instead of a DFA's single next state." },
+    { id: "L6-2", lec: "L6", q: "State the four-step method for building a DFA from an English description of a language.", a: "1) Decide what you must remember about the string read so far. 2) Turn every distinct answer into a state. 3) Work out δ for each state and symbol. 4) F = states meaning “yes, so far”; q₀ = the state matching the empty string." },
+    { id: "L6-3", lec: "L6", q: "Building a DFA for “strings ending in a fixed symbol,” what must a state remember?", a: "Only the last symbol read (or that none has been read yet) — nothing about length or earlier symbols." },
+    { id: "L6-4", lec: "L6", q: "Matching a fixed pattern like aba, what determines a state's meaning?", a: "The longest suffix of the string read so far that is also a prefix of the pattern. For aba that can only be ε, a, ab, or aba — exactly four states." },
+    { id: "L6-5", lec: "L6", q: "What's the key structural difference between a DFA for “contains aba” and one for “ends with aba”?", a: "“Contains” makes the aba-state absorbing (self-loops on every symbol, since one occurrence anywhere already qualifies). “Ends with” instead falls back into the a/ab states on a symbol that partially overlaps a fresh match." },
+    { id: "L6-6", lec: "L6", q: "Why does a DFA for “starts with aba” need a dead state, but “contains aba” does not?", a: "A broken prefix is fatal for “starts with” — one wrong symbol means the string can never start with aba, so there's no partial match to fall back into, only a trap state that swallows the rest." },
+    { id: "L6-7", lec: "L6", q: "Tracking two independent conditions at once (even count of 0's *and* even count of 1's) costs how many states, and why?", a: "A product of the individual state counts, not a sum — a single state must record both parities simultaneously, so every combination of the two needs its own state." },
+    { id: "L6-8", lec: "L6", q: "Pattern — you already have DFAs M₁ for L₁ and M₂ for L₂. How do you build one DFA for L₁ ∩ L₂ without redesigning from scratch?", a: "Product construction: states are pairs (p,q), one coordinate per machine; δ((p,q),a) = (δ₁(p,a), δ₂(q,a)); start = (q₀,₁, q₀,₂); accept a pair only when *both* coordinates are accepting. Swap “both” for “at least one” and the same construction builds L₁ ∪ L₂ instead — this is exactly why tracking two conditions at once costs a product of state counts." },
+    { id: "L6-9", lec: "L6", q: "Pattern — you have a DFA for L and want one for its complement, Σ*∖L. What's the one-line fix, and why does it only work for DFAs?", a: "Swap F and Q∖F; keep Q, Σ, δ, q₀ unchanged. It works because δ is total and single-valued — every string drives the machine to exactly one state, so flipping which states count as “yes” flips the answer for every string at once." },
+    { id: "L6-10", lec: "L6", q: "Design pattern — build a DFA for L = { w over {0,1} : w has at most three 1's }. What do the states track, and what happens on a fourth 1?", a: "Four states counting 1's seen so far — 0, 1, 2, 3, all accepting — plus a dead state reached the instant a fourth 1 arrives, absorbing and non-accepting. This “count up to a threshold, then trap” pattern solves any at-most-k language in k+2 states." },
+    { id: "L6-11", lec: "L6", q: "Design pattern — build a DFA over digits 0–9 for L = { w : atoi(w) mod 3 = 0 }. What does each state remember, and why are three states enough?", a: "Each state is the running remainder mod 3 of the number read so far. Since 10 ≡ 1 (mod 3), appending digit d to a number with remainder r gives new remainder (r+d) mod 3 — the state update never needs the actual number, only its remainder. This “running remainder” pattern solves any mod-m divisibility check in exactly m states." },
+
+    // ---------------- L7 ----------------
+    { id: "L7-1", lec: "L7", q: "When does an NFA accept a string w?", a: "If *some* sequence of choices consistent with δ ends in a state in F — only one surviving branch needs to succeed." },
+    { id: "L7-2", lec: "L7", q: "What's the core design trick for an NFA, versus the DFA for the same language?", a: "Find the one fact a DFA would be forced to remember exactly, and instead design a state that *guesses* the fact the moment evidence for it appears — one state per stage of the guess, with a self-loop on “haven't guessed yet.”" },
+    { id: "L7-3", lec: "L7", q: "If a guessed NFA transition turns out wrong partway through, what do you do with it?", a: "Nothing — leave it undefined. You never redirect a failed guess anywhere; the branch simply dies." },
+    { id: "L7-4", lec: "L7", q: "Define the extended transition function δ̂ for an NFA.", a: "δ̂(q,ε) = {q}; δ̂(q,xa) = ⋃ over p∈δ̂(q,x) of δ(p,a). N accepts w iff δ̂(q₀,w) ∩ F ≠ ∅." },
+    { id: "L7-5", lec: "L7", q: "In an NFA's computation tree, is a branch that runs off the edge of δ the same thing as rejecting the string?", a: "No — it's just one guess admitting it was wrong. The string is only rejected once *every* surviving leaf misses F." },
+    { id: "L7-6", lec: "L7", q: "Why does “the 5th symbol from the end is 1” showcase nondeterminism's real payoff?", a: "A DFA must remember the last five symbols (2⁵ = 32 states, one per window). An NFA just guesses which 1 is fifth-from-last and demands exactly four more symbols of any kind — six states, no exponential blow-up." },
+    { id: "L7-7", lec: "L7", q: "How does an NFA handle an OR of independent conditions (e.g. “contains 0101 or contains 1010”)?", a: "Branch at a shared start state into one independent chain per alternative, each ending in its own absorbing accept state; the string is accepted the moment any one chain succeeds." },
+    { id: "L7-8", lec: "L7", q: "Why is “does not contain 11” a trap for NFA design?", a: "Avoiding a pattern needs no guessing at all — every branch must avoid it, so there's only ever one sensible next state. The “NFA” is really a DFA wearing an NFA's clothes." },
+    { id: "L7-9", lec: "L7", q: "Can you complement an NFA just by swapping which states are in F, the way you can for a DFA?", a: "No. A DFA's δ̂ tracks one unique state per string, so flipping F flips the answer everywhere. An NFA's δ̂ tracks a whole *set* of branches, some of which die outright — and a dead branch is not a rejecting one, so swapping F has no well-defined effect." },
+    { id: "L7-10", lec: "L7", q: "Define ECLOSE(q).", a: "The set of all states reachable from q using zero or more ε-transitions. q ∈ ECLOSE(q) always, since taking zero free moves is allowed." },
+    { id: "L7-11", lec: "L7", q: "In an ε-NFA, what is the “frontier” after reading a string w?", a: "Start at ECLOSE({q₀}). After each symbol, the new frontier is ECLOSE of the union of δ(q,symbol) over every q in the old frontier. Accept iff the final frontier meets F." },
+    { id: "L7-12", lec: "L7", q: "If an ε-NFA and a hand-built raw NFA end up with the same number of states, what did the ε-edges actually buy you?", a: "An easier *design* process — you build “any string,” “the symbol 0,” “the symbol 1,” etc. as separate, obviously-correct fragments and wire them together, instead of hand-merging several roles into one clever state." },
+    { id: "L7-14", lec: "L7", q: "Design pattern — build an NFA for L = { w over {0,1} : w contains 00 or w contains 11 }. How much of the “contains-pattern” design can you reuse for both halves?", a: "One shared self-looping start state, branching into two independent two-stage chains — one guesses “00 starts here,” the other guesses “11 starts here” — each ending in its own absorbing accept state. Any “P₁ or P₂” language reuses this shared-start, parallel-chains pattern directly." },
+    { id: "L7-15", lec: "L7", q: "Pattern check — does L = { w over {a,b} : 2nd symbol is a AND w ends with b } benefit from nondeterminism the way an OR of conditions does?", a: "Not really — this is a genuine AND, forced along a single pass (check the 2nd symbol once, keep tracking the last symbol throughout), so a plain deterministic count-and-remember DFA is just as natural. Nondeterminism's real payoff is for OR-of-conditions or “guess a position” languages, not conjunctions checked in one pass." },
+    { id: "L7-16", lec: "L7", q: "General bound — a DFA for “the k-th symbol from the end is 1” needs how many states, and why can't it do better?", a: "2^k states — one per possible window of the last k symbols, since the machine can't know which symbol will turn out to be k-th-from-last until the string ends, so it must be ready for every window. This sliding-window blow-up is the standard proof that an NFA can be exponentially smaller than any equivalent DFA." },
+
+    // ---------------- L8 ----------------
+    { id: "L8-1", lec: "L8", q: "Give the formula that eliminates ε-transitions, turning an ε-NFA into a plain NFA.", a: "δ'(q,a) = ECLOSE( ⋃ over p∈ECLOSE(q) of δ(p,a) ), for every q∈Q and a∈Σ." },
+    { id: "L8-2", lec: "L8", q: "When eliminating ε-transitions, when must the new start state q₀ be added to F'?", a: "When ECLOSE(q₀) ∩ F ≠ ∅ — i.e. the original machine accepted ε itself for free. Every other state's F-membership carries over unchanged." },
+    { id: "L8-3", lec: "L8", q: "Every DFA is secretly also an NFA. What's the one-line embedding that proves it?", a: "δ'(q,a) = {δ(q,a)} — the singleton containing M's unique next state. This genuinely returns a subset of Q (just one of size exactly 1), so nothing in the NFA definition is violated." },
+    { id: "L8-4", lec: "L8", q: "Which direction of “DFA and NFA recognize the same languages” needs a real construction, and which is free?", a: "DFA→NFA is immediate from the definitions alone (the singleton embedding). NFA→DFA is the direction that actually does work, since an NFA's δ can return 0, 2, or more states at once." },
+    { id: "L8-5", lec: "L8", q: "Describe the subset construction.", a: "Build a DFA whose states are subsets of the NFA's states: Q_D = 𝒫(Q), δ_D(S,a) = ⋃ over q∈S of δ(q,a), start state {q₀}, and F_D = every subset that meets F. In practice, only build the subsets reachable from the start." },
+    { id: "L8-6", lec: "L8", q: "What language family forces the subset construction's worst case — all 2ⁿ subsets reachable?", a: "“The k-th symbol from the end is 1.” The exact guess that keeps the NFA small forces the DFA to remember every one of the 2^k possible last-k windows — there's no way around it." },
+    { id: "L8-7", lec: "L8", q: "Describe the state-pair tree method for checking whether two DFAs recognize the same language.", a: "Root a tree at (start₁, start₂); from a pair (p,q), branch to (δ₁(p,a), δ₂(q,a)) per symbol a. The instant a pair appears with exactly one of p,q accepting, the machines disagree. If no such pair ever appears, they're equivalent." },
+    { id: "L8-8", lec: "L8", q: "Efficiency pattern — when running the subset construction by hand, why build only the subsets reachable from {q₀} instead of the full power set?", a: "Most of 𝒫(Q) is never visited by any string — a subset δ_D can never actually reach contributes nothing to L(M). Building only reachable subsets keeps the resulting DFA no larger than it needs to be, even though the worst-case bound is still 2ⁿ." },
+
+    // ---------------- L9 ----------------
+    { id: "L9-1", lec: "L9", q: "Define distinguishable states p and q.", a: "There exists a string w such that exactly one of δ̂(p,w), δ̂(q,w) is in F — w is a witness that tells p and q apart. If no such w exists, p and q are equivalent." },
+    { id: "L9-2", lec: "L9", q: "What is the backward-propagation rule behind table-filling?", a: "If δ(p,a)=r and δ(q,a)=s, and r,s are already known distinguishable (by witness w'), then p and q are distinguishable too, by the witness aw'." },
+    { id: "L9-3", lec: "L9", q: "State the table-filling algorithm.", a: "List every unordered pair of states. Base case: mark a pair if exactly one state is in F. Propagate: mark {p,q} if some symbol sends it to an already-marked pair. Repeat until a pass marks nothing new. Every pair left unmarked is equivalent — merge each equivalence class into one state." },
+    { id: "L9-4", lec: "L9", q: "Define the Myhill–Nerode relation x ∼ₗ y.", a: "For every continuation z ∈ Σ*, xz and yz are either both in L or both not in L — no continuation can tell x and y apart." },
+    { id: "L9-5", lec: "L9", q: "State the Myhill–Nerode theorem.", a: "L is regular iff ∼ₗ has finitely many equivalence classes. When L is regular, that class count equals exactly the number of states in L's minimal DFA — no correct DFA for L can ever have fewer states." },
+    { id: "L9-6", lec: "L9", q: "How does table-filling on one specific DFA relate to ∼ₗ itself?", a: "Table-filling computes ∼ₗ through the lens of that one machine's states; ∼ₗ itself doesn't care which machine you drew — two states of any correct DFA are equivalent exactly when every string reaching one is ∼ₗ-equivalent to every string reaching the other." },
+    { id: "L9-8", lec: "L9", q: "Skill drill — for L = { w over {0,1} : w ends with 1 }, name the ∼ₗ classes directly, without drawing a DFA first. How many are there?", a: "Two classes: strings ending in 1, and strings ending in 0 (or ε). Any continuation z only ever gets appended after the last symbol already read, so nothing finer than “what was the last symbol” is ever distinguishable — matching the two-state DFA this language needs." },
+    { id: "L9-9", lec: "L9", q: "General technique — to prove two strings x, y are ∼ₗ-*inequivalent*, what exactly do you need to produce?", a: "A single continuation z such that xz ∈ L and yz ∉ L (or vice versa). One witness z is enough — you never need to check every possible continuation, just exhibit one that splits them apart." },
+
+    // ---------------- L10 ----------------
+    { id: "L10-1", lec: "L10", q: "What are Thompson's construction's three base-case fragments?", a: "N(∅): a non-accepting start state with no transitions — accepts nothing. N(ε): one state, both start and accept, no transitions — accepts only ε. N(a): two states joined by a single edge labeled a." },
+    { id: "L10-2", lec: "L10", q: "In Thompson's construction, what happens to a sub-fragment's own old accepting state once it's glued into a bigger fragment?", a: "It stops being accepting — demoted to an ordinary state whose job is now to hand control onward via ε — and exactly one new accepting state is designated per gluing rule." },
+    { id: "L10-3", lec: "L10", q: "Thompson's construction on (0|1)*01 produces how many states, versus a hand-built NFA and the minimal DFA for the same language?", a: "12 states by Thompson's construction, versus 3 hand-built directly and 2 once minimized — the construction is never wrong, but never economical either." },
+    { id: "L10-4", lec: "L10", q: "State the pumping lemma for regular languages.", a: "If L is regular, there is a pumping length p≥1 such that every w∈L with |w|≥p can be written w=xyz with |xy|≤p, |y|≥1, and xyⁱz ∈ L for every i≥0." },
+    { id: "L10-5", lec: "L10", q: "What pigeonhole fact drives the pumping lemma's proof?", a: "Running a p-state DFA on the first p symbols of w visits p+1 states — more than the machine has — so some state repeats. Everything between the two visits is a loop y that can be cut out or repeated freely." },
+    { id: "L10-6", lec: "L10", q: "Frame the pumping lemma as an adversarial game: who picks what, and who wins?", a: "An adversary (standing in for “some DFA with p states”) picks the split xyz after seeing your w. You win by finding, for *every* possible split, some i that breaks xyⁱz ∈ L. Winning every split proves L is not regular." },
+    { id: "L10-7", lec: "L10", q: "Is satisfying the pumping property enough to prove a language IS regular?", a: "No — the lemma gives a necessary condition, not a sufficient one. A language could satisfy it purely by accident while still failing to be regular for some other reason." },
+    { id: "L10-12", lec: "L10", q: "Reusable template — what are the three moves in every pumping-lemma non-regularity proof?", a: "1) Pick a witness w∈L with |w|≥p, chosen so the first p symbols are forced into one predictable block. 2) Use |xy|≤p to pin down the shape of y within that block. 3) Pick an i (usually 0 or 2) that pushes xyⁱz outside L for *every* valid choice of y, not just one." },
+    { id: "L10-8", lec: "L10", q: "For L₁={0ⁿ1ⁿ}, choosing w=0ᵖ1ᵖ, why must y be a run of 0's?", a: "Since |xy|≤p, xy sits entirely inside the leading 0ᵖ block, so y=0^k for some 1≤k≤p — it can never reach into the 1's." },
+    { id: "L10-9", lec: "L10", q: "For L₂={ww}, why does pumping down (i=0) on w₀=0ᵖ10ᵖ1 break membership?", a: "Any u with uu=xz would need exactly one 1 in each copy, but removing y=0^k from the first block shifts where that copy ends relative to the string's true middle — once k≥1, the two halves can never line up as identical copies again." },
+    { id: "L10-10", lec: "L10", q: "Why is p²+k (for 1≤k≤p) never a perfect square, proving {0^(n²)} is not regular?", a: "Because p² < p²+k ≤ p²+p < (p+1)² — it lies strictly between two consecutive perfect squares, so pumping up always lands off the square lattice." },
+    { id: "L10-13", lec: "L10", q: "Alternative pattern — a direct pumping witness for L = { 0ⁿ1ᵐ : n≠m } is awkward to pin down. What's the cleaner technique?", a: "Use closure properties instead of pumping directly: L∩0*1* is L itself, and (0*1*)∖L is exactly {0ⁿ1ⁿ}. If L were regular, complementing within the regular language 0*1* would force {0ⁿ1ⁿ} to be regular too — which the pumping lemma already rules out. Reducing to an already-known non-regular language via closure properties is often cleaner than hunting for a working witness directly." },
+    { id: "L10-14", lec: "L10", q: "Combine two pumping arguments — show L = { aⁱbʲcᵏ : i=j or j=k } is not regular.", a: "Pick w = a^p b^p c^(p+1): it satisfies i=j (both p) but not j=k (p≠p+1), so w∈L. Since |xy|≤p, y=a^k sits in the leading a-block. Pump i=0: a^(p-k)b^p c^(p+1) now has i≠j (p-k<p) and still j≠k — both disjuncts fail at once, for every valid k. General move: pick a witness that satisfies exactly one disjunct, only barely, while the other disjunct is already false and structurally stays false after pumping." }
+  ];
+
+  // ---------------- state ----------------
+  var knownIds = loadKnown();
+  var state = {
+    deckFilter: "all",
+    order: [],   // array of ids in display order for current filter
+    pos: 0,
+    flipped: false,
+    shuffled: false
+  };
+
+  function loadKnown() {
+    try {
+      var raw = localStorage.getItem("automata-flashcards-known-v1");
+      return new Set(raw ? JSON.parse(raw) : []);
+    } catch (e) { return new Set(); }
+  }
+  function saveKnown() {
+    try { localStorage.setItem("automata-flashcards-known-v1", JSON.stringify(Array.from(knownIds))); }
+    catch (e) { /* ignore */ }
+  }
+
+  var byId = {};
+  CARDS.forEach(function (c) { byId[c.id] = c; });
+
+  function idsForFilter(filter) {
+    return CARDS.filter(function (c) { return filter === "all" || c.lec === filter; })
+                .map(function (c) { return c.id; });
+  }
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function rebuildOrder() {
+    var ids = idsForFilter(state.deckFilter);
+    state.order = state.shuffled ? shuffle(ids) : ids;
+    state.pos = 0;
+    state.flipped = false;
+  }
+
+  // ---------------- DOM refs ----------------
+  var el = {
+    deckSelect: document.getElementById("deck-select"),
+    statText: document.getElementById("stat-text"),
+    shuffleBtn: document.getElementById("shuffle-btn"),
+    positionText: document.getElementById("position-text"),
+    deckTitleText: document.getElementById("deck-title-text"),
+    card: document.getElementById("card"),
+    frontLec: document.getElementById("front-lec"),
+    frontTopic: document.getElementById("front-topic"),
+    frontText: document.getElementById("front-text"),
+    backText: document.getElementById("back-text"),
+    prevBtn: document.getElementById("prev-btn"),
+    nextBtn: document.getElementById("next-btn"),
+    flipBtn: document.getElementById("flip-btn"),
+    knowBtn: document.getElementById("know-btn"),
+    dots: document.getElementById("dots")
+  };
+
+  function buildDeckSelect() {
+    var opts = [];
+    opts.push({ value: "all", label: "All lectures · " + CARDS.length + " cards" });
+    LECTURES.forEach(function (l) {
+      var count = CARDS.filter(function (c) { return c.lec === l.code; }).length;
+      opts.push({ value: l.code, label: l.code + " · " + l.title + " · " + count });
+    });
+    el.deckSelect.innerHTML = opts.map(function (o) {
+      return '<option value="' + o.value + '">' + o.label + "</option>";
+    }).join("");
+  }
+
+  function currentCard() {
+    var id = state.order[state.pos];
+    return byId[id];
+  }
+
+  function masteredCountInDeck() {
+    var n = 0;
+    state.order.forEach(function (id) { if (knownIds.has(id)) n++; });
+    return n;
+  }
+
+  function render() {
+    var card = currentCard();
+    if (!card) return;
+
+    el.frontLec.textContent = card.lec;
+    el.frontTopic.textContent = TITLE_BY_CODE[card.lec];
+    el.frontText.textContent = card.q;
+    el.backText.textContent = card.a;
+
+    el.card.classList.toggle("flipped", state.flipped);
+
+    el.positionText.innerHTML = "&rarr; card " + (state.pos + 1) + " of " + state.order.length;
+    el.deckTitleText.textContent = state.deckFilter === "all" ? "all lectures" : state.deckFilter;
+
+    el.statText.textContent = masteredCountInDeck() + "/" + state.order.length + " mastered";
+
+    var known = knownIds.has(card.id);
+    el.knowBtn.setAttribute("aria-pressed", known ? "true" : "false");
+    el.knowBtn.innerHTML = (known
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Mastered'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Got it');
+
+    renderDots();
+  }
+
+  function renderDots() {
+    el.dots.innerHTML = "";
+    state.order.forEach(function (id, i) {
+      var b = document.createElement("button");
+      b.className = "dot" + (knownIds.has(id) ? " known" : "") + (i === state.pos ? " current" : "");
+      b.setAttribute("aria-label", "Go to card " + (i + 1));
+      b.addEventListener("click", function () {
+        state.pos = i;
+        state.flipped = false;
+        render();
+      });
+      el.dots.appendChild(b);
+    });
+  }
+
+  function goTo(delta) {
+    var n = state.order.length;
+    state.pos = (state.pos + delta + n) % n;
+    state.flipped = false;
+    render();
+  }
+
+  function toggleFlip() {
+    state.flipped = !state.flipped;
+    render();
+  }
+
+  function toggleKnown() {
+    var card = currentCard();
+    if (knownIds.has(card.id)) knownIds.delete(card.id);
+    else knownIds.add(card.id);
+    saveKnown();
+    render();
+  }
+
+  // ---------------- wire up ----------------
+  buildDeckSelect();
+  rebuildOrder();
+  render();
+
+  el.deckSelect.addEventListener("change", function () {
+    state.deckFilter = el.deckSelect.value;
+    rebuildOrder();
+    render();
+  });
+
+  el.shuffleBtn.addEventListener("click", function () {
+    state.shuffled = !state.shuffled;
+    el.shuffleBtn.setAttribute("aria-pressed", state.shuffled ? "true" : "false");
+    el.shuffleBtn.lastChild.textContent = state.shuffled ? " Shuffled" : " Shuffle";
+    rebuildOrder();
+    render();
+  });
+
+  el.prevBtn.addEventListener("click", function () { goTo(-1); });
+  el.nextBtn.addEventListener("click", function () { goTo(1); });
+  el.flipBtn.addEventListener("click", toggleFlip);
+  el.knowBtn.addEventListener("click", toggleKnown);
+  el.card.addEventListener("click", toggleFlip);
+  el.card.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleFlip(); }
+  });
+
+  document.addEventListener("keydown", function (e) {
+    var tag = (e.target && e.target.tagName) || "";
+    if (tag === "SELECT" || tag === "INPUT" || tag === "TEXTAREA") return;
+    if (e.key === "ArrowLeft") { goTo(-1); }
+    else if (e.key === "ArrowRight") { goTo(1); }
+    else if (e.key === " ") { e.preventDefault(); toggleFlip(); }
+    else if (e.key === "k" || e.key === "K") { toggleKnown(); }
+  });
+})();
+</script>
+</body>
+</html>
