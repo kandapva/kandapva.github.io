@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Context-Free Flashcards</title>
+<meta name="description" content="Recall drills on context-free grammars — derivations, normal forms, pushdown automata, and the CFL pumping lemma — organized by lecture.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%B3%3C/text%3E%3C/svg%3E">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #f6f1f4;
+    --surface: #ffffff;
+    --surface-2: #fbf6f9;
+    --ink: #241f2e;
+    --ink-soft: #6d6278;
+    --ink-faint: #a89cae;
+    --line: #e6dce3;
+    --accent: #d92d78;
+    --accent-ink: #ffffff;
+    --accent-soft: #fbe1ec;
+    --good: #1f8f6d;
+    --good-soft: #e1f3ec;
+    --shadow: 220 30% 20%;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17141c;
+      --surface: #201b27;
+      --surface-2: #262030;
+      --ink: #f1ecf3;
+      --ink-soft: #b3a7bd;
+      --ink-faint: #6f6478;
+      --line: #362e3f;
+      --accent: #ff6fa8;
+      --accent-ink: #201018;
+      --accent-soft: #3a2231;
+      --good: #52d8ab;
+      --good-soft: #1b3129;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17141c;
+    --surface: #201b27;
+    --surface-2: #262030;
+    --ink: #f1ecf3;
+    --ink-soft: #b3a7bd;
+    --ink-faint: #6f6478;
+    --line: #362e3f;
+    --accent: #ff6fa8;
+    --accent-ink: #201018;
+    --accent-soft: #3a2231;
+    --good: #52d8ab;
+    --good-soft: #1b3129;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  .page {
+    width: 100%;
+    max-width: 640px;
+    padding: 2.5rem 1.25rem 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  /* ---------- disclaimer ---------- */
+  .disclaimer {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    color: var(--ink);
+    padding: 0.7rem 0.9rem;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+  .disclaimer .disclaimer-icon { flex: none; font-size: 1rem; line-height: 1.45; }
+  .disclaimer strong { color: var(--accent); }
+
+  /* ---------- header ---------- */
+  header { display: flex; flex-direction: column; gap: 0.35rem; }
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  h1 {
+    margin: 0;
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(1.7rem, 5vw, 2.2rem);
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+  header p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.94rem;
+    line-height: 1.5;
+    max-width: 52ch;
+  }
+
+  /* ---------- deck bar ---------- */
+  .deck-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .deck-select-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  select {
+    appearance: none;
+    font-family: "Public Sans", sans-serif;
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0.6rem 2.1rem 0.6rem 0.9rem;
+    cursor: pointer;
+  }
+  select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .deck-select-wrap::after {
+    content: "";
+    position: absolute;
+    right: 0.85rem;
+    width: 0.5em;
+    height: 0.5em;
+    border-right: 2px solid var(--ink-soft);
+    border-bottom: 2px solid var(--ink-soft);
+    transform: rotate(45deg);
+    pointer-events: none;
+  }
+  .stat-chip {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--good);
+    background: var(--good-soft);
+    border-radius: 999px;
+    padding: 0.42rem 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    white-space: nowrap;
+  }
+  .stat-chip .ring {
+    width: 0.7em; height: 0.7em; border-radius: 50%;
+    border: 2px solid var(--good);
+    position: relative;
+    flex: none;
+  }
+  .stat-chip .ring::after {
+    content: ""; position: absolute; inset: 2px;
+    border-radius: 50%; border: 1.5px solid var(--good);
+  }
+  .shuffle-btn {
+    margin-left: auto;
+    font-family: "Public Sans", sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.5rem 0.9rem;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 0.4em;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .shuffle-btn svg { width: 14px; height: 14px; }
+  .shuffle-btn[aria-pressed="true"] {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .shuffle-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- card stage ---------- */
+  .stage { display: flex; flex-direction: column; gap: 0.9rem; }
+  .position-line {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    display: flex;
+    justify-content: space-between;
+  }
+  .card-scene {
+    perspective: 1600px;
+  }
+  .card {
+    position: relative;
+    width: 100%;
+    min-height: 300px;
+    cursor: pointer;
+  }
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    transition: transform 0.5s cubic-bezier(.4,.2,.2,1);
+    transform-style: preserve-3d;
+  }
+  .card.flipped .card-inner { transform: rotateY(180deg); }
+  @media (prefers-reduced-motion: reduce) {
+    .card-inner { transition: none; }
+  }
+  .face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    box-shadow: 0 1px 2px hsl(var(--shadow) / 0.06), 0 8px 24px hsl(var(--shadow) / 0.08);
+    padding: 1.7rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .face.back {
+    transform: rotateY(180deg);
+    background: var(--surface-2);
+  }
+  /* index-card corner fold, front face only */
+  .face.front::before {
+    content: "";
+    position: absolute;
+    top: 0; right: 0;
+    width: 26px; height: 26px;
+    background: linear-gradient(135deg, transparent 50%, var(--bg) 50.5%);
+    border-radius: 0 18px 0 12px;
+  }
+  .face-tag {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    display: flex;
+    align-items: baseline;
+    gap: 0.5em;
+  }
+  .face-tag .lec-topic { color: var(--ink-faint); font-weight: 500; }
+  .back .face-tag { color: var(--good); }
+  .face-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+  .face.front .face-body {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: clamp(1.15rem, 3.2vw, 1.4rem);
+    font-weight: 500;
+    line-height: 1.42;
+    text-wrap: balance;
+  }
+  .face.back .face-body {
+    font-size: 1.02rem;
+    line-height: 1.56;
+    color: var(--ink);
+  }
+  .face-hint {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    text-align: right;
+  }
+
+  /* ---------- controls ---------- */
+  .controls {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto auto;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .ctl-btn {
+    font-family: "Public Sans", sans-serif;
+    font-weight: 600;
+    font-size: 0.88rem;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    padding: 0.7rem 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 0.4em;
+    transition: transform 0.1s, background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .ctl-btn:active { transform: translateY(1px); }
+  .ctl-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .ctl-btn.icon { padding: 0.7rem 0.85rem; }
+  .ctl-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    grid-column: 3;
+    justify-self: center;
+    padding: 0.7rem 1.6rem;
+  }
+  .ctl-btn.know { grid-column: 4; }
+  .ctl-btn.know[aria-pressed="true"] {
+    background: var(--good-soft);
+    border-color: var(--good);
+    color: var(--good);
+  }
+  .ctl-btn.next { grid-column: 5; }
+  .ctl-btn.prev { grid-column: 1; }
+  .ctl-btn svg { width: 16px; height: 16px; }
+
+  /* ---------- progress dots ---------- */
+  .dots-wrap { display: flex; flex-direction: column; gap: 0.55rem; }
+  .dots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    border: 1.6px solid var(--ink-faint);
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    position: relative;
+  }
+  .dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .dot.known { border-color: var(--good); }
+  .dot.known::after {
+    content: ""; position: absolute; inset: 2.5px;
+    border-radius: 50%; border: 1.4px solid var(--good);
+  }
+  .dot.current { border-color: var(--accent); background: var(--accent); transform: scale(1.2); }
+  .legend {
+    display: flex; gap: 1.1rem; flex-wrap: wrap;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 0.4em; }
+  .legend .dot { cursor: default; transform: none; }
+
+  footer {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    text-align: center;
+    letter-spacing: 0.01em;
+  }
+  footer kbd {
+    font-family: inherit;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 0.05em 0.4em;
+  }
+
+  @media (max-width: 420px) {
+    .controls { grid-template-columns: auto 1fr auto; grid-template-rows: auto auto; row-gap: 0.5rem; }
+    .ctl-btn.prev { grid-column: 1; grid-row: 1; }
+    .ctl-btn.next { grid-column: 3; grid-row: 1; }
+    .ctl-btn.primary { grid-column: 2; grid-row: 1; }
+    .ctl-btn.know { grid-column: 1 / -1; grid-row: 2; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="disclaimer" role="note">
+    <span class="disclaimer-icon" aria-hidden="true">⚠️</span>
+    <span><strong>AI-generated study aid.</strong> This deck was generated with AI assistance and has been reviewed, but it may still contain small errors. If you spot one, please report it so it can be corrected.</span>
+  </div>
+  <header>
+    <div class="eyebrow">Theory of Computation &middot; ODD 2026</div>
+    <h1>Context-Free Flashcards</h1>
+    <p>Recall drills on context-free grammars &mdash; from a bare rewrite of S all the way to the one
+      thing a stack can never resolve by guessing right. Pick a lecture below, or study the whole run.</p>
+  </header>
+
+  <div class="deck-bar">
+    <div class="deck-select-wrap">
+      <select id="deck-select" aria-label="Choose a lecture deck"></select>
+    </div>
+    <div class="stat-chip"><span class="ring"></span><span id="stat-text">0/0 mastered</span></div>
+    <button class="shuffle-btn" id="shuffle-btn" aria-pressed="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+      Shuffle
+    </button>
+  </div>
+
+  <div class="stage">
+    <div class="position-line">
+      <span id="position-text">&rarr; card 1 of 1</span>
+      <span id="deck-title-text">&mdash;</span>
+    </div>
+    <div class="card-scene">
+      <div class="card" id="card" tabindex="0" role="button" aria-label="Flashcard, press space or click to flip">
+        <div class="card-inner" id="card-inner">
+          <div class="face front">
+            <div class="face-tag"><span id="front-lec">L11</span><span class="lec-topic" id="front-topic">Derivations, Parse Trees, and Ambiguity</span></div>
+            <div class="face-body" id="front-text">Loading&hellip;</div>
+            <div class="face-hint">tap card or press space to flip</div>
+          </div>
+          <div class="face back">
+            <div class="face-tag"><span>ANSWER</span></div>
+            <div class="face-body" id="back-text">Loading&hellip;</div>
+            <div class="face-hint">tap card to flip back</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="ctl-btn icon prev" id="prev-btn" aria-label="Previous card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <button class="ctl-btn primary" id="flip-btn">Flip</button>
+      <button class="ctl-btn know" id="know-btn" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        Got it
+      </button>
+      <button class="ctl-btn icon next" id="next-btn" aria-label="Next card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="dots-wrap">
+    <div class="dots" id="dots"></div>
+    <div class="legend">
+      <span><span class="dot"></span> new</span>
+      <span><span class="dot known"></span> mastered</span>
+      <span><span class="dot current"></span> current</span>
+    </div>
+  </div>
+
+  <footer>
+    <kbd>&larr;</kbd> <kbd>&rarr;</kbd> navigate &nbsp;&middot;&nbsp; <kbd>space</kbd> flip &nbsp;&middot;&nbsp; <kbd>k</kbd> mark known
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var LECTURES = [
+    { code: "L11", title: "Derivations, Parse Trees, and Ambiguity" },
+    { code: "L12", title: "Simplification of Context-Free Grammars" },
+    { code: "L13", title: "Chomsky and Greibach Normal Forms" },
+    { code: "L14", title: "Pushdown Automata" },
+    { code: "L15", title: "Pumping Lemma for Context-Free Languages" }
+  ];
+  var TITLE_BY_CODE = {};
+  LECTURES.forEach(function (l) { TITLE_BY_CODE[l.code] = l.title; });
+
+  var CARDS = [
+    // ---------------- L11 ----------------
+    { id: "L11-1", lec: "L11", q: "Define a derivation step ⇒ and its closure ⇒*.", a: "γ₁⇒γ₂ if γ₁=αAδ and γ₂=αβδ for some production A→β and any α,δ — one rule applied to one variable, somewhere in the string. ⇒* is the reflexive-transitive closure: zero or more steps." },
+    { id: "L11-2", lec: "L11", q: "Define a sentential form.", a: "Any string γ ∈ (V∪Σ)* — so it can freely mix variables and terminals — with S⇒*γ: anything reachable from the start symbol by zero or more derivation steps. A sentential form is a snapshot mid-derivation; it need not be finished." },
+    { id: "L11-2b", lec: "L11", q: "Define L(G), the language of a grammar, in terms of ⇒*.", a: "L(G) = { w∈Σ* : S⇒*w } — exactly the sentential forms that happen to contain no variables left to rewrite. Every string in L(G) is a sentential form, but most sentential forms (the ones still holding a variable) are not yet in L(G)." },
+    { id: "L11-3", lec: "L11", q: "Define a parse tree for a derivation S⇒*w.", a: "A tree rooted at S; every internal node is labeled some variable A whose children (left to right) are labeled X₁,…,Xₖ for a rule A→X₁X₂⋯Xₖ used at that node; every leaf is labeled a terminal or ε." },
+    { id: "L11-4", lec: "L11", q: "Define the yield of a parse tree.", a: "The string read off its leaf labels, left to right, with any ε leaf contributing nothing." },
+    { id: "L11-5", lec: "L11", q: "Why does a parse tree's yield equal the derived string, no matter what order the underlying derivation rewrote variables in?", a: "The tree only records which rule fired at which node, never when — so any two derivations that apply the same rules at the same nodes, in any order, build the identical tree and therefore the identical yield." },
+    { id: "L11-6", lec: "L11", q: "Define leftmost and rightmost derivations.", a: "Leftmost: at every step, rewrite the leftmost variable in the current sentential form. Rightmost: always the rightmost variable. Both are canonical choices — a sentential form's variables can in general be rewritten in any order." },
+    { id: "L11-7", lec: "L11", q: "How do top-down and bottom-up parsers relate to leftmost and rightmost derivations?", a: "A top-down (LL) parser constructs a leftmost derivation as it reads left to right. A bottom-up (LR) parser constructs a rightmost derivation, but discovers it in reverse, building it from the leaves up." },
+    { id: "L11-8", lec: "L11", q: "Define ambiguous and unambiguous grammar.", a: "A grammar is ambiguous if some w∈L(G) has two or more distinct parse trees — equivalently, two or more distinct leftmost derivations of w. It's unambiguous if every w∈L(G) has exactly one parse tree." },
+    { id: "L11-9", lec: "L11", q: "Why is comparing leftmost derivations specifically the standard test for ambiguity, rather than comparing derivations in general?", a: "A parse tree and its leftmost derivation determine each other uniquely — one tree, one leftmost derivation, always. Derivations in general don't have this property: many different step-orders can build the very same tree, so comparing arbitrary derivations would flag false ambiguity that isn't really there." },
+    { id: "L11-10", lec: "L11", q: "Design pattern — an expression grammar E→E+E|E*E|(E)|a is ambiguous because nothing fixes which operator groups first. How do you remove the ambiguity without shrinking the language?", a: "Encode precedence directly into a hierarchy of variables: E→E+T|T, T→T*F|F, F→(E)|a. The new layer forces every * to bind before any + can see it, so no sentential form is ever free to branch two ways — same language, exactly one parse tree per string." },
+    { id: "L11-11", lec: "L11", q: "Pattern — a grammar like S→aSb|ε never lets a sentential form hold more than one variable at once. What does that guarantee about ambiguity?", a: "It's automatically unambiguous: with never more than one variable to rewrite, a derivation never has a real choice of what to expand next, so there's only ever one derivation — and one parse tree — per string." },
+    { id: "L11-12", lec: "L11", q: "What does it mean for a language to be inherently ambiguous?", a: "Every possible context-free grammar for it is ambiguous — unlike the arithmetic-expression case, no rewriting trick (adding precedence layers, or anything else) can ever produce an unambiguous grammar for the language itself." },
+
+    // ---------------- L12 ----------------
+    { id: "L12-1", lec: "L12", q: "Define generating and reachable symbols.", a: "X is generating if X⇒*w for some terminal string w (every terminal is generating trivially, in zero steps). X is reachable if S⇒*αXβ for some α,β." },
+    { id: "L12-2", lec: "L12", q: "Define a useful symbol, and a useless one.", a: "X is useful if some derivation S⇒*αXβ⇒*w actually uses it on the way to a terminal string w — equivalently, X is both generating and reachable. X is useless if it isn't." },
+    { id: "L12-3", lec: "L12", q: "Order pattern — when eliminating useless symbols, why must you check generating symbols before reachable ones, never the other order?", a: "Checking reachability first, on the original grammar, can mark every symbol reachable (since nothing has been trimmed yet) and remove nothing; a later generating-only pass then strips some symbols but never re-checks reachability on what's left — stranding a now-unreachable variable in the “final” grammar. Generating-first correctly shrinks the grammar before reachability is ever tested." },
+    { id: "L12-4", lec: "L12", q: "Define a nullable variable, and the induction that finds every one.", a: "A is nullable if A⇒*ε. Basis: A is nullable if A→ε is a production. Induction: A is nullable if A→C₁C₂⋯Cₖ is a production and every Cᵢ is already known nullable." },
+    { id: "L12-5", lec: "L12", q: "Method — how do you build an equivalent grammar with no ε-productions?", a: "For every production A→X₁X₂⋯Xₙ, add every version obtained by deleting some nonempty subset of the nullable Xᵢ's (never deleting all of them, unless the body was already empty) — then drop the original ε-productions outright." },
+    { id: "L12-6", lec: "L12", q: "Define a unit production and a unit pair.", a: "A→B, with A and B both variables, is a unit production. (A,B) is a unit pair if A⇒*B using only unit productions (every (A,A) is trivially a unit pair, by zero steps)." },
+    { id: "L12-7", lec: "L12", q: "Method — how do you build an equivalent grammar with no unit productions?", a: "Find every unit pair (A,B); for each one, add to A every non-unit production body that B has. Then drop all unit productions from the result." },
+    { id: "L12-8", lec: "L12", q: "State the safe order for the three simplification passes, and explain why it isn't the order you'd naturally introduce them in.", a: "Eliminate ε-productions first, then unit productions, then useless symbols — even though useless symbols are the easiest to explain, they're removed last. Eliminating ε-productions can manufacture brand-new unit productions (A→BC with C nullable creates the new unit production A→B); running unit-elimination after catches it. Unit-elimination itself only ever copies existing non-unit bodies around, so it can't manufacture a fresh ε-production or a fresh useless symbol — safe to leave useless-symbol elimination for last." },
+    { id: "L12-9", lec: "L12", q: "Design pattern — a variable with no production at all (nothing on the right of any rule headed by it). Which check catches it: generating, or reachable?", a: "Generating — it can never derive a terminal string, since it can never take a single derivation step. It's removed in the generating pass, before reachability is even checked." },
+    { id: "L12-10", lec: "L12", q: "Design pattern — a variable C that only ever appears in a production like C→Sc, where S is the start symbol, but S never actually produces C anywhere. Which check catches it?", a: "Reachable — C might derive perfectly good terminal strings on its own (it's generating), but if no sentential form starting from S ever contains C, it's simply never reachable, and the reachable pass removes it." },
+    { id: "L12-11", lec: "L12", q: "Pattern — eliminating ε-productions from A→aAA (with A nullable) should in principle list four presence/absence choices for the two A's. Why does it collapse to just three productions, aAA|aA|a?", a: "Deleting the second A alone and deleting the third A alone both produce the identical string aA — the two choices aren't distinguishable once written out, so they collapse into one production instead of two." },
+
+    // ---------------- L13 ----------------
+    { id: "L13-1", lec: "L13", q: "A grammar can be fully simplified (no useless symbols, ε-productions, or unit productions) and still lack something an algorithm needs. What's missing?", a: "A uniform, predictable shape. “Simplified” says nothing about how many derivation steps a string of a given length takes — different strings of the same length can take different numbers of steps, so nothing gives an algorithm a formula for when to stop searching." },
+    { id: "L13-2", lec: "L13", q: "Define Chomsky Normal Form (CNF).", a: "Every production has the shape A→BC (B,C variables) or A→a (a a terminal), aside from the single possible exception S→ε (and only if S never appears on the right of any production)." },
+    { id: "L13-3", lec: "L13", q: "Why does CNF guarantee that a derivation of a string of length n takes exactly 2n−1 steps, always?", a: "Every step is binary: A→BC always splits one node into two, and A→a always terminates a branch by emitting one terminal. With every step doing exactly one of those two things, the total step count is forced by n alone, with no other shape of production left to vary it." },
+    { id: "L13-4", lec: "L13", q: "Method — converting a simplified grammar to CNF, step (a).", a: "For every terminal a appearing in a body of length 2 or more, introduce a fresh variable Xₐ→a and replace that occurrence of a with Xₐ. Afterward every body is either a single terminal or two-or-more variables." },
+    { id: "L13-5", lec: "L13", q: "Method — converting a simplified grammar to CNF, step (b).", a: "Break every remaining body B₁B₂⋯Bₖ with k≥3 into a chain: introduce fresh variables D₁,…,D_{k-2} and replace the production with A→B₁D₁, D₁→B₂D₂, …, D_{k-2}→B_{k-1}B_k. The same long body appearing in more than one production can reuse the same chain of D's." },
+    { id: "L13-6", lec: "L13", q: "What does CNF buy you algorithmically, and why does it need the binary-step guarantee specifically?", a: "A dynamic-programming table (the CYK algorithm) can decide membership in O(n³) time by computing, for every substring, exactly which variables can derive it — a computation that only makes sense because every derivation step either splits a substring into two independently solved halves (A→BC) or bottoms out at one terminal (A→a)." },
+    { id: "L13-7", lec: "L13", q: "Define Greibach Normal Form (GNF).", a: "Every production has the shape A→aα, with a a single terminal and α a (possibly empty) string of variables, aside from the single possible exception S→ε." },
+    { id: "L13-8", lec: "L13", q: "Why does GNF suit building a pushdown automaton with no ε-moves, directly from the grammar?", a: "Every production already emits exactly one terminal, read first — that terminal-first shape lets a PDA push α onto the stack and consume a in a single, ε-free move; reading the very next input symbol alone tells a top-down parser which rule to try next, with no lookahead needed." },
+    { id: "L13-9", lec: "L13", q: "State Lemma 1 (substitution), used repeatedly in the GNF construction.", a: "If A→Bα is a production, and B→β₁|β₂|⋯|βₙ are ALL of B's productions, replacing A→Bα by A→β₁α|β₂α|⋯|βₙα leaves the language unchanged — every way of expanding B first and continuing with α is already accounted for." },
+    { id: "L13-10", lec: "L13", q: "State Lemma 2 (eliminating immediate left recursion).", a: "Given A→Aα|β (β not itself starting with A), introduce a fresh variable A′ and write A→β|βA′, A′→α|αA′. A′ spells out “zero or more repetitions of α” — exactly what the left-recursive rule was doing, but without a rule that starts by rewriting A back into itself." },
+    { id: "L13-11", lec: "L13", q: "Outline the three-step method for converting a grammar to GNF.", a: "Order the variables A₁,…,Aₙ arbitrarily. (1) For each Aᵢ, repeatedly apply Lemma 1 to substitute away any body that starts with a lower-indexed variable Aⱼ (j<i), until every Aᵢ-body starts with a terminal or a higher-indexed variable. (2) If this leaves immediate left recursion (Aᵢ→Aᵢα), apply Lemma 2. (3) Working from the highest index down, substitute every remaining variable-led body using that variable's own finished, terminal-led bodies." },
+    { id: "L13-12", lec: "L13", q: "Why does it never matter which arbitrary order you number the variables in, when converting to GNF?", a: "Step 1 eliminates every backward reference under any numbering at all — a different order only changes which variables end up doing the substitution work and how large the final grammar turns out to be, never whether the construction succeeds." },
+    { id: "L13-13", lec: "L13", q: "Pattern — how can you tell in advance that a grammar's GNF conversion will need no left-recursion helper variable at all?", a: "If no variable can ever reach a sentential form starting with itself — directly, or after substituting other variables in — then immediate left recursion never appears during the construction, so Lemma 2 (and its extra helper variable) is simply never triggered." },
+
+    // ---------------- L14 ----------------
+    { id: "L14-1", lec: "L14", q: "Why can no finite automaton recognize {0ⁿ1ⁿ : n>0}?", a: "Checking that the count of 1's matches the count of 0's needs a count that grows without bound as n grows, and a finite set of states can only ever hold a bounded amount of information — never an unbounded count." },
+    { id: "L14-2", lec: "L14", q: "What can a PDA do with its stack on a single move?", a: "Push one new symbol onto the top, pop the top symbol off, or leave the stack untouched — never reach in and inspect or change anything buried underneath without first removing everything sitting above it." },
+    { id: "L14-3", lec: "L14", q: "Give the formal six-tuple definition of a PDA.", a: "P = (Q, Σ, Γ, δ, q₀, F): Q finite states, Σ input alphabet, Γ stack alphabet, δ: Q×Σ_ε×Γ_ε → 𝒫(Q×Γ_ε) the transition function, q₀ the start state, F the accepting states." },
+    { id: "L14-4", lec: "L14", q: "Read the transition q →[a, X→Y] r in words.", a: "From state q, read a and the symbol X off the top of the stack, then move to r and replace X with Y. Because δ returns a set, several such arcs — even with different labels or destinations — can apply to the same configuration at once, and the PDA explores all of them in parallel." },
+    { id: "L14-5", lec: "L14", q: "Name the six meaningful cases a transition a,X→Y can take when a, X, or Y may each be ε.", a: "ε,ε→Y: just push Y. ε,X→ε: just pop (only if X is on top). a,ε→ε: read only. a,ε→Y: read, then push Y. a,X→ε: read, then pop (only if X is on top). a,X→Y: read, then replace X with Y (only if X is on top)." },
+    { id: "L14-6", lec: "L14", q: "There's an unlisted seventh transition case, ε,ε→ε. What is it for?", a: "It changes state, reads nothing, and touches the stack not at all — on its own it does nothing, but it's exactly the move a PDA needs to nondeterministically guess something about input it can't yet see, such as where the middle of a string is." },
+    { id: "L14-7", lec: "L14", q: "Define a PDA configuration (instantaneous description).", a: "A triple (q, w, α): the current state q, the unread remainder w of the input, and the current stack contents α — written left to right, with the rightmost symbol of α the top of the stack." },
+    { id: "L14-8", lec: "L14", q: "Define the yields relation ⊢ for one PDA step.", a: "(q,w,α) ⊢ (r,w′,α′) if some (r,Y)∈δ(q,a,X) applies: a is consumed from the front of w (or nothing, if a=ε), and the top symbol X of α is popped and Y pushed in its place (or Y is just pushed on top, if X=ε)." },
+    { id: "L14-9", lec: "L14", q: "Give both conventions for PDA acceptance.", a: "By final state: the computation must end in some q∈F, with the stack's final contents irrelevant. By empty stack: the computation must end with an empty stack, with the state reached irrelevant (F can even be left empty). A standard construction converts between the two — they define the same class of languages." },
+    { id: "L14-10", lec: "L14", q: "Design pattern — {wcw^R} needs no guessing, but {ww^R} (no center marker) needs the ε,ε→ε guess move. What's the general lesson?", a: "A marker symbol in the input tells the PDA exactly where to stop pushing and start popping, deterministically. Without one, finding the midpoint is a guess — the PDA tries every possible split in parallel, keeping only the branches that later empty the stack in step with the input running out." },
+    { id: "L14-11", lec: "L14", q: "Define a deterministic pushdown automaton (DPDA).", a: "For every state q and stack-top symbol X: at most one legal move per input symbol (or ε), and an available ε-move out of (q,X) may never coexist with an available real-symbol move out of the same (q,X) — no two arcs can ever compete for the same configuration." },
+    { id: "L14-12", lec: "L14", q: "Unlike DFA and NFA, a DPDA and a PDA are not equally powerful. Why can no DPDA recognize {ww^R}?", a: "Recognizing it requires guessing where the midpoint is, and a DPDA is, by definition, a machine that never has more than one legal move available at any configuration — it never guesses. Regular ⊊ DCFL ⊊ CFL, and {ww^R} is the standard witness that the second containment is strict." },
+    { id: "L14-13", lec: "L14", q: "Design pattern — build a PDA for equal numbers of a's and b's in any order (not grouped). What's the reusable stack trick?", a: "Let a single stack symbol represent either “one extra a” or “one extra b,” depending on what's currently on top: a mismatched arrival pops (canceling the top), while a matching-sign arrival pushes (growing the pile). The stack ends empty exactly when the running counts are equal." },
+
+    // ---------------- L15 ----------------
+    { id: "L15-1", lec: "L15", q: "The regular pumping lemma comes from one repeated state. Where does the context-free version's repetition come from?", a: "From one repeated variable, forced to occur twice along a single root-to-leaf path of a tall enough parse tree — the pigeonhole argument moves from “states visited while reading” to “variables visited while descending a tree.”" },
+    { id: "L15-2", lec: "L15", q: "With a CNF grammar of m variables, why does a string of length ≥2^m force some variable to repeat on one root-to-leaf path?", a: "Every internal node has exactly two children, so a tree of height h has a yield of length at most 2^h. A string of length ≥2^m needs height >m, meaning some root-to-leaf path passes through more than m variable-labeled nodes — and with only m distinct variables available, some one of them must repeat on that path, by pigeonhole." },
+    { id: "L15-3", lec: "L15", q: "A repeated variable A on one path splits the string into five pieces, s=uvxyz. What does each piece correspond to?", a: "x is the yield of the inner A's own subtree; vxy together is the yield of the outer A's (larger) subtree; u and z are whatever the rest of the tree contributes on either side, outside the outer A entirely." },
+    { id: "L15-4", lec: "L15", q: "State the pumping lemma for context-free languages.", a: "If A is context-free, there's a pumping length p≥1 such that every s∈A with |s|≥p can be written s=uvxyz with: (1) uvⁱxyⁱz∈A for every i≥0, (2) |vy|>0, (3) |vxy|≤p." },
+    { id: "L15-5", lec: "L15", q: "Why does condition |vxy|≤p follow directly from the repeated-variable proof, rather than needing a separate argument?", a: "The inner occurrence of the repeated variable A is found within the first m+1 levels below the outer one — so vxy, the entire yield of the outer A's subtree, is itself bounded by p by construction, not by a separate bound." },
+    { id: "L15-6", lec: "L15", q: "Worked pattern — for {aⁿbⁿcⁿ}, why can a window of length ≤p never touch all three letter-blocks at once?", a: "Each block a^p, b^p, c^p already has length p on its own, and vxy is one contiguous window of length at most p — it can slide into at most two neighboring blocks, so at least one of the three letters is guaranteed to be completely untouched by v and y." },
+    { id: "L15-7", lec: "L15", q: "Worked pattern — for {aⁿbⁿcⁿ}, once one letter is guaranteed untouched by v and y, why does pumping up (i=2) always break membership?", a: "Pumping up strictly grows the string, and every extra character comes from v and y — which miss the untouched letter entirely. That letter's count stays fixed while the total length grows, so at least one of the other two counts strictly increases; the three counts can no longer all be equal." },
+    { id: "L15-8", lec: "L15", q: "Worked pattern — for the copy language {ww}, why does the proof split into exactly two cases?", a: "Since |vxy|≤p and the witness's own midpoint sits at position 2p (for a length-4p witness), the window vxy is either short enough to fit entirely inside one half, or it straddles the midpoint itself — no third possibility exists once |vxy|≤p is fixed." },
+    { id: "L15-9", lec: "L15", q: "Worked pattern — for {ww}, Case 1 (vxy inside one half): why does pumping up break the copy structure, even though the untouched half literally doesn't change?", a: "The untouched half keeps its exact contents, but the pumped half grows longer — so the string's own true midpoint shifts away from where the untouched half actually ends, into the newly inserted characters. A “first half” that no longer stops where the untouched block does can't match a second half built from what remains." },
+    { id: "L15-10", lec: "L15", q: "Worked pattern — for {ww}, Case 2 (vxy straddles the midpoint): why does pumping down (i=0) force membership to fail for every choice except the untouched original?", a: "Removing characters from exactly the boundary region leaves a string shaped 0^p1^i0^j1^p with i+j<2p — a string of that shape can only be some w′w′ if i=j=p exactly, reconstructing the original untouched string. Any other split gives i+j strictly less than 2p, which can never satisfy i=j=p, so it fails for every legal adversary choice." },
+    { id: "L15-11", lec: "L15", q: "Heuristic — nothing in the lemma says whether to pump up or down. How do you choose, before starting a new proof?", a: "Pump up when the language needs some count to stay exactly equal to another (pumping strictly grows one side without growing the other, breaking the equality). Pump down when the language needs a boundary or an exact positional match (removing characters shifts where a structural boundary falls, breaking the alignment)." },
+    { id: "L15-12", lec: "L15", q: "{ww^R} is context-free, but the plain copy language {ww} is not. What does the difference turn on?", a: "A stack is last-in-first-out, so it can push the first half and pop it back off against a reversed second half automatically — exactly what {ww^R} needs. {ww} needs the second half to match the first in the same order, which a single stack has no mechanism to check." }
+  ];
+
+  // ---------------- state ----------------
+  var knownIds = loadKnown();
+  var state = {
+    deckFilter: "all",
+    order: [],   // array of ids in display order for current filter
+    pos: 0,
+    flipped: false,
+    shuffled: false
+  };
+
+  function loadKnown() {
+    try {
+      var raw = localStorage.getItem("cfg-pda-flashcards-known-v1");
+      return new Set(raw ? JSON.parse(raw) : []);
+    } catch (e) { return new Set(); }
+  }
+  function saveKnown() {
+    try { localStorage.setItem("cfg-pda-flashcards-known-v1", JSON.stringify(Array.from(knownIds))); }
+    catch (e) { /* ignore */ }
+  }
+
+  var byId = {};
+  CARDS.forEach(function (c) { byId[c.id] = c; });
+
+  function idsForFilter(filter) {
+    return CARDS.filter(function (c) { return filter === "all" || c.lec === filter; })
+                .map(function (c) { return c.id; });
+  }
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function rebuildOrder() {
+    var ids = idsForFilter(state.deckFilter);
+    state.order = state.shuffled ? shuffle(ids) : ids;
+    state.pos = 0;
+    state.flipped = false;
+  }
+
+  // ---------------- DOM refs ----------------
+  var el = {
+    deckSelect: document.getElementById("deck-select"),
+    statText: document.getElementById("stat-text"),
+    shuffleBtn: document.getElementById("shuffle-btn"),
+    positionText: document.getElementById("position-text"),
+    deckTitleText: document.getElementById("deck-title-text"),
+    card: document.getElementById("card"),
+    frontLec: document.getElementById("front-lec"),
+    frontTopic: document.getElementById("front-topic"),
+    frontText: document.getElementById("front-text"),
+    backText: document.getElementById("back-text"),
+    prevBtn: document.getElementById("prev-btn"),
+    nextBtn: document.getElementById("next-btn"),
+    flipBtn: document.getElementById("flip-btn"),
+    knowBtn: document.getElementById("know-btn"),
+    dots: document.getElementById("dots")
+  };
+
+  function buildDeckSelect() {
+    var opts = [];
+    opts.push({ value: "all", label: "All lectures · " + CARDS.length + " cards" });
+    LECTURES.forEach(function (l) {
+      var count = CARDS.filter(function (c) { return c.lec === l.code; }).length;
+      opts.push({ value: l.code, label: l.code + " · " + l.title + " · " + count });
+    });
+    el.deckSelect.innerHTML = opts.map(function (o) {
+      return '<option value="' + o.value + '">' + o.label + "</option>";
+    }).join("");
+  }
+
+  function currentCard() {
+    var id = state.order[state.pos];
+    return byId[id];
+  }
+
+  function masteredCountInDeck() {
+    var n = 0;
+    state.order.forEach(function (id) { if (knownIds.has(id)) n++; });
+    return n;
+  }
+
+  function render() {
+    var card = currentCard();
+    if (!card) return;
+
+    el.frontLec.textContent = card.lec;
+    el.frontTopic.textContent = TITLE_BY_CODE[card.lec];
+    el.frontText.textContent = card.q;
+    el.backText.textContent = card.a;
+
+    el.card.classList.toggle("flipped", state.flipped);
+
+    el.positionText.innerHTML = "&rarr; card " + (state.pos + 1) + " of " + state.order.length;
+    el.deckTitleText.textContent = state.deckFilter === "all" ? "all lectures" : state.deckFilter;
+
+    el.statText.textContent = masteredCountInDeck() + "/" + state.order.length + " mastered";
+
+    var known = knownIds.has(card.id);
+    el.knowBtn.setAttribute("aria-pressed", known ? "true" : "false");
+    el.knowBtn.innerHTML = (known
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Mastered'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Got it');
+
+    renderDots();
+  }
+
+  function renderDots() {
+    el.dots.innerHTML = "";
+    state.order.forEach(function (id, i) {
+      var b = document.createElement("button");
+      b.className = "dot" + (knownIds.has(id) ? " known" : "") + (i === state.pos ? " current" : "");
+      b.setAttribute("aria-label", "Go to card " + (i + 1));
+      b.addEventListener("click", function () {
+        state.pos = i;
+        state.flipped = false;
+        render();
+      });
+      el.dots.appendChild(b);
+    });
+  }
+
+  function goTo(delta) {
+    var n = state.order.length;
+    state.pos = (state.pos + delta + n) % n;
+    state.flipped = false;
+    render();
+  }
+
+  function toggleFlip() {
+    state.flipped = !state.flipped;
+    render();
+  }
+
+  function toggleKnown() {
+    var card = currentCard();
+    if (knownIds.has(card.id)) knownIds.delete(card.id);
+    else knownIds.add(card.id);
+    saveKnown();
+    render();
+  }
+
+  // ---------------- wire up ----------------
+  buildDeckSelect();
+  rebuildOrder();
+  render();
+
+  el.deckSelect.addEventListener("change", function () {
+    state.deckFilter = el.deckSelect.value;
+    rebuildOrder();
+    render();
+  });
+
+  el.shuffleBtn.addEventListener("click", function () {
+    state.shuffled = !state.shuffled;
+    el.shuffleBtn.setAttribute("aria-pressed", state.shuffled ? "true" : "false");
+    el.shuffleBtn.lastChild.textContent = state.shuffled ? " Shuffled" : " Shuffle";
+    rebuildOrder();
+    render();
+  });
+
+  el.prevBtn.addEventListener("click", function () { goTo(-1); });
+  el.nextBtn.addEventListener("click", function () { goTo(1); });
+  el.flipBtn.addEventListener("click", toggleFlip);
+  el.knowBtn.addEventListener("click", toggleKnown);
+  el.card.addEventListener("click", toggleFlip);
+  el.card.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleFlip(); }
+  });
+
+  document.addEventListener("keydown", function (e) {
+    var tag = (e.target && e.target.tagName) || "";
+    if (tag === "SELECT" || tag === "INPUT" || tag === "TEXTAREA") return;
+    if (e.key === "ArrowLeft") { goTo(-1); }
+    else if (e.key === "ArrowRight") { goTo(1); }
+    else if (e.key === " ") { e.preventDefault(); toggleFlip(); }
+    else if (e.key === "k" || e.key === "K") { toggleKnown(); }
+  });
+})();
+</script>
+</body>
+</html>

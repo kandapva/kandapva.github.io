@@ -73,6 +73,22 @@
     gap: 1.75rem;
   }
 
+  /* ---------- disclaimer ---------- */
+  .disclaimer {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    color: var(--ink);
+    padding: 0.7rem 0.9rem;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+  .disclaimer .disclaimer-icon { flex: none; font-size: 1rem; line-height: 1.45; }
+  .disclaimer strong { color: var(--accent); }
+
   /* ---------- header ---------- */
   header { display: flex; flex-direction: column; gap: 0.35rem; }
   .eyebrow {
@@ -372,6 +388,10 @@
 <body>
 
 <div class="page">
+  <div class="disclaimer" role="note">
+    <span class="disclaimer-icon" aria-hidden="true">⚠️</span>
+    <span><strong>AI-generated study aid.</strong> This deck was generated with AI assistance and has been reviewed, but it may still contain small errors. If you spot one, please report it so it can be corrected.</span>
+  </div>
   <header>
     <div class="eyebrow">Theory of Computation &middot; ODD 2026</div>
     <h1>Automata Flashcards</h1>

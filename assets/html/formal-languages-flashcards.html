@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formal Languages Flashcards</title>
+<meta name="description" content="Recall drills on the foundations of Theory of Computation — alphabets, strings, closure, regular expressions, grammars, and the Chomsky hierarchy — organized by lecture.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%B1%3C/text%3E%3C/svg%3E">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #f6f1f4;
+    --surface: #ffffff;
+    --surface-2: #fbf6f9;
+    --ink: #241f2e;
+    --ink-soft: #6d6278;
+    --ink-faint: #a89cae;
+    --line: #e6dce3;
+    --accent: #d92d78;
+    --accent-ink: #ffffff;
+    --accent-soft: #fbe1ec;
+    --good: #1f8f6d;
+    --good-soft: #e1f3ec;
+    --shadow: 220 30% 20%;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17141c;
+      --surface: #201b27;
+      --surface-2: #262030;
+      --ink: #f1ecf3;
+      --ink-soft: #b3a7bd;
+      --ink-faint: #6f6478;
+      --line: #362e3f;
+      --accent: #ff6fa8;
+      --accent-ink: #201018;
+      --accent-soft: #3a2231;
+      --good: #52d8ab;
+      --good-soft: #1b3129;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17141c;
+    --surface: #201b27;
+    --surface-2: #262030;
+    --ink: #f1ecf3;
+    --ink-soft: #b3a7bd;
+    --ink-faint: #6f6478;
+    --line: #362e3f;
+    --accent: #ff6fa8;
+    --accent-ink: #201018;
+    --accent-soft: #3a2231;
+    --good: #52d8ab;
+    --good-soft: #1b3129;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  .page {
+    width: 100%;
+    max-width: 640px;
+    padding: 2.5rem 1.25rem 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  /* ---------- disclaimer ---------- */
+  .disclaimer {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    color: var(--ink);
+    padding: 0.7rem 0.9rem;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+  .disclaimer .disclaimer-icon { flex: none; font-size: 1rem; line-height: 1.45; }
+  .disclaimer strong { color: var(--accent); }
+
+  /* ---------- header ---------- */
+  header { display: flex; flex-direction: column; gap: 0.35rem; }
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  h1 {
+    margin: 0;
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(1.7rem, 5vw, 2.2rem);
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+  header p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.94rem;
+    line-height: 1.5;
+    max-width: 52ch;
+  }
+
+  /* ---------- deck bar ---------- */
+  .deck-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .deck-select-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  select {
+    appearance: none;
+    font-family: "Public Sans", sans-serif;
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0.6rem 2.1rem 0.6rem 0.9rem;
+    cursor: pointer;
+  }
+  select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .deck-select-wrap::after {
+    content: "";
+    position: absolute;
+    right: 0.85rem;
+    width: 0.5em;
+    height: 0.5em;
+    border-right: 2px solid var(--ink-soft);
+    border-bottom: 2px solid var(--ink-soft);
+    transform: rotate(45deg);
+    pointer-events: none;
+  }
+  .stat-chip {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--good);
+    background: var(--good-soft);
+    border-radius: 999px;
+    padding: 0.42rem 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    white-space: nowrap;
+  }
+  .stat-chip .ring {
+    width: 0.7em; height: 0.7em; border-radius: 50%;
+    border: 2px solid var(--good);
+    position: relative;
+    flex: none;
+  }
+  .stat-chip .ring::after {
+    content: ""; position: absolute; inset: 2px;
+    border-radius: 50%; border: 1.5px solid var(--good);
+  }
+  .shuffle-btn {
+    margin-left: auto;
+    font-family: "Public Sans", sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.5rem 0.9rem;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 0.4em;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .shuffle-btn svg { width: 14px; height: 14px; }
+  .shuffle-btn[aria-pressed="true"] {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .shuffle-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- card stage ---------- */
+  .stage { display: flex; flex-direction: column; gap: 0.9rem; }
+  .position-line {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    display: flex;
+    justify-content: space-between;
+  }
+  .card-scene {
+    perspective: 1600px;
+  }
+  .card {
+    position: relative;
+    width: 100%;
+    min-height: 300px;
+    cursor: pointer;
+  }
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    transition: transform 0.5s cubic-bezier(.4,.2,.2,1);
+    transform-style: preserve-3d;
+  }
+  .card.flipped .card-inner { transform: rotateY(180deg); }
+  @media (prefers-reduced-motion: reduce) {
+    .card-inner { transition: none; }
+  }
+  .face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    box-shadow: 0 1px 2px hsl(var(--shadow) / 0.06), 0 8px 24px hsl(var(--shadow) / 0.08);
+    padding: 1.7rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .face.back {
+    transform: rotateY(180deg);
+    background: var(--surface-2);
+  }
+  /* index-card corner fold, front face only */
+  .face.front::before {
+    content: "";
+    position: absolute;
+    top: 0; right: 0;
+    width: 26px; height: 26px;
+    background: linear-gradient(135deg, transparent 50%, var(--bg) 50.5%);
+    border-radius: 0 18px 0 12px;
+  }
+  .face-tag {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    display: flex;
+    align-items: baseline;
+    gap: 0.5em;
+  }
+  .face-tag .lec-topic { color: var(--ink-faint); font-weight: 500; }
+  .back .face-tag { color: var(--good); }
+  .face-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+  .face.front .face-body {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: clamp(1.15rem, 3.2vw, 1.4rem);
+    font-weight: 500;
+    line-height: 1.42;
+    text-wrap: balance;
+  }
+  .face.back .face-body {
+    font-size: 1.02rem;
+    line-height: 1.56;
+    color: var(--ink);
+  }
+  .face-hint {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    text-align: right;
+  }
+
+  /* ---------- controls ---------- */
+  .controls {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto auto;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .ctl-btn {
+    font-family: "Public Sans", sans-serif;
+    font-weight: 600;
+    font-size: 0.88rem;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    padding: 0.7rem 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 0.4em;
+    transition: transform 0.1s, background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .ctl-btn:active { transform: translateY(1px); }
+  .ctl-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .ctl-btn.icon { padding: 0.7rem 0.85rem; }
+  .ctl-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    grid-column: 3;
+    justify-self: center;
+    padding: 0.7rem 1.6rem;
+  }
+  .ctl-btn.know { grid-column: 4; }
+  .ctl-btn.know[aria-pressed="true"] {
+    background: var(--good-soft);
+    border-color: var(--good);
+    color: var(--good);
+  }
+  .ctl-btn.next { grid-column: 5; }
+  .ctl-btn.prev { grid-column: 1; }
+  .ctl-btn svg { width: 16px; height: 16px; }
+
+  /* ---------- progress dots ---------- */
+  .dots-wrap { display: flex; flex-direction: column; gap: 0.55rem; }
+  .dots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    border: 1.6px solid var(--ink-faint);
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    position: relative;
+  }
+  .dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .dot.known { border-color: var(--good); }
+  .dot.known::after {
+    content: ""; position: absolute; inset: 2.5px;
+    border-radius: 50%; border: 1.4px solid var(--good);
+  }
+  .dot.current { border-color: var(--accent); background: var(--accent); transform: scale(1.2); }
+  .legend {
+    display: flex; gap: 1.1rem; flex-wrap: wrap;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 0.4em; }
+  .legend .dot { cursor: default; transform: none; }
+
+  footer {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    text-align: center;
+    letter-spacing: 0.01em;
+  }
+  footer kbd {
+    font-family: inherit;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 0.05em 0.4em;
+  }
+
+  @media (max-width: 420px) {
+    .controls { grid-template-columns: auto 1fr auto; grid-template-rows: auto auto; row-gap: 0.5rem; }
+    .ctl-btn.prev { grid-column: 1; grid-row: 1; }
+    .ctl-btn.next { grid-column: 3; grid-row: 1; }
+    .ctl-btn.primary { grid-column: 2; grid-row: 1; }
+    .ctl-btn.know { grid-column: 1 / -1; grid-row: 2; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="disclaimer" role="note">
+    <span class="disclaimer-icon" aria-hidden="true">⚠️</span>
+    <span><strong>AI-generated study aid.</strong> This deck was generated with AI assistance and has been reviewed, but it may still contain small errors. If you spot one, please report it so it can be corrected.</span>
+  </div>
+  <header>
+    <div class="eyebrow">Theory of Computation &middot; ODD 2026</div>
+    <h1>Formal Languages Flashcards</h1>
+    <p>Recall drills on where the whole course starts &mdash; alphabets, strings, and languages,
+      built up through closure, regular expressions, grammars, and the Chomsky hierarchy. Pick a
+      lecture below, or study the whole run.</p>
+  </header>
+
+  <div class="deck-bar">
+    <div class="deck-select-wrap">
+      <select id="deck-select" aria-label="Choose a lecture deck"></select>
+    </div>
+    <div class="stat-chip"><span class="ring"></span><span id="stat-text">0/0 mastered</span></div>
+    <button class="shuffle-btn" id="shuffle-btn" aria-pressed="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+      Shuffle
+    </button>
+  </div>
+
+  <div class="stage">
+    <div class="position-line">
+      <span id="position-text">&rarr; card 1 of 1</span>
+      <span id="deck-title-text">&mdash;</span>
+    </div>
+    <div class="card-scene">
+      <div class="card" id="card" tabindex="0" role="button" aria-label="Flashcard, press space or click to flip">
+        <div class="card-inner" id="card-inner">
+          <div class="face front">
+            <div class="face-tag"><span id="front-lec">L1</span><span class="lec-topic" id="front-topic">Computation, Ambiguity, and Formal Languages</span></div>
+            <div class="face-body" id="front-text">Loading&hellip;</div>
+            <div class="face-hint">tap card or press space to flip</div>
+          </div>
+          <div class="face back">
+            <div class="face-tag"><span>ANSWER</span></div>
+            <div class="face-body" id="back-text">Loading&hellip;</div>
+            <div class="face-hint">tap card to flip back</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="ctl-btn icon prev" id="prev-btn" aria-label="Previous card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <button class="ctl-btn primary" id="flip-btn">Flip</button>
+      <button class="ctl-btn know" id="know-btn" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        Got it
+      </button>
+      <button class="ctl-btn icon next" id="next-btn" aria-label="Next card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="dots-wrap">
+    <div class="dots" id="dots"></div>
+    <div class="legend">
+      <span><span class="dot"></span> new</span>
+      <span><span class="dot known"></span> mastered</span>
+      <span><span class="dot current"></span> current</span>
+    </div>
+  </div>
+
+  <footer>
+    <kbd>&larr;</kbd> <kbd>&rarr;</kbd> navigate &nbsp;&middot;&nbsp; <kbd>space</kbd> flip &nbsp;&middot;&nbsp; <kbd>k</kbd> mark known
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var LECTURES = [
+    { code: "L1", title: "Computation, Ambiguity, and Formal Languages" },
+    { code: "L2", title: "Kleene Star and Closure Properties" },
+    { code: "L3", title: "Recognizers, Regular Expressions, and Grammars" },
+    { code: "L4", title: "The Chomsky Hierarchy" }
+  ];
+  var TITLE_BY_CODE = {};
+  LECTURES.forEach(function (l) { TITLE_BY_CODE[l.code] = l.title; });
+
+  var CARDS = [
+    // ---------------- L1 ----------------
+    { id: "L1-1", lec: "L1", q: "What question is this course built around — the one many algorithms are really answering?", a: "Does this input belong to a particular set of valid inputs? Answering it reliably means making ‘valid’ mathematically precise, since a machine cannot execute a vibe — only an exact, checkable rule can." },
+    { id: "L1-2", lec: "L1", q: "Why can't natural language serve as a rigorous specification of ‘valid inputs’?", a: "Natural language is ambiguous by design — e.g. “I saw the man with the telescope” has two genuinely different readings, and nothing in the sentence picks one. Human listeners resolve it with context a machine doesn't have; a machine needs to resolve every input the same way, every time." },
+    { id: "L1-3", lec: "L1", q: "State the dangling-else problem, and the rule C/C++ use to legislate it away.", a: "In if(x) if(y) a(); else b();, nothing says whether else pairs with the inner if(y) or the outer if(x) — both parses are grammatically legal. C and C++ fix it by convention: else binds to the nearest unmatched if." },
+    { id: "L1-4", lec: "L1", q: "Does the ‘nearest unmatched if’ rule fix the dangling-else ambiguity by proving one reading was secretly more correct?", a: "No — it's a convention, a deliberate pick between two equally legal readings, not a proof that one was right all along. To force the other reading instead, you have to rewrite the code itself (e.g. wrap the inner if in braces)." },
+    { id: "L1-5", lec: "L1", q: "Define an alphabet.", a: "An alphabet Σ is simply a finite set of symbols." },
+    { id: "L1-6", lec: "L1", q: "Define a string over an alphabet Σ, and its length.", a: "A string is a finite sequence of symbols from Σ. |w| denotes the length of w — the empty string ε has |ε|=0, and is a string too, easy to forget precisely because it looks like nothing." },
+    { id: "L1-7", lec: "L1", q: "A string and a set can be built from the very same symbols yet are fundamentally different objects. What's the distinction?", a: "A string is a sequence — order matters and symbols repeat freely (011 ≠ 101, even with the same symbols). A set — like the alphabet itself — ignores order and can't repeat elements ({0,1}={1,0})." },
+    { id: "L1-8", lec: "L1", q: "Define a language.", a: "A language L is a set of strings over Σ, i.e. L ⊆ Σ*, where Σ* denotes the set of all strings that can be built from Σ." },
+    { id: "L1-9", lec: "L1", q: "Define a decision problem.", a: "Given a language L ⊆ Σ* and a string w ∈ Σ*, the question ‘is w ∈ L?’ is a decision problem. Asserting membership of a string in a language is what we call deciding it." },
+    { id: "L1-10", lec: "L1", q: "The three building blocks — alphabet, string, language — make ‘is w ∈ L?’ precise. What open question do they still leave unanswered?", a: "Given only an alphabet and a language as a set of strings, how do we finitely and mechanically specify which strings are in L, so membership can be decided rather than just asserted? Describing L in a sentence is exactly the ambiguity trap the whole exercise was meant to escape." },
+    { id: "L1-11", lec: "L1", q: "Skill check — phrase a spam filter as a ‘does this input belong to a set of valid inputs’ question.", a: "L = the set of all messages that are spam — the filter is asking ‘does this message belong to L?’ The membership framing fits most classification-shaped tasks; it breaks down once a task's real output is a specific string, number, or object, not a yes/no." },
+    { id: "L1-12", lec: "L1", q: "Why does the definition of alphabet insist Σ be finite?", a: "Finiteness is what lets everything built on top — strings, languages — be described by finitely writable rules, even though the sets those rules generate (Σ* itself, most languages) turn out infinite. An infinite alphabet couldn't even be written down to check membership against." },
+
+    // ---------------- L2 ----------------
+    { id: "L2-1", lec: "L2", q: "Give the recursive (base case + inductive case) definition of Σ*.", a: "Base case: ε ∈ Σ*. Inductive case: if w ∈ Σ* and a ∈ Σ, then wa ∈ Σ*. Σ* is the smallest set closed under these two rules — nothing is thrown in that they don't force in." },
+    { id: "L2-2", lec: "L2", q: "Define concatenation of two strings, recursively, and the three facts that follow from it.", a: "For u,v ∈ Σ*: ε·v = v, and (wa)·v = w(a·v) for a ∈ Σ. Three facts follow: ε is the identity (εw = wε = w); concatenation is associative but not commutative (ab ≠ ba); and length adds, |uv| = |u|+|v|." },
+    { id: "L2-3", lec: "L2", q: "Define L's powers, and from them, the Kleene star L* and positive closure L⁺.", a: "L⁰ = {ε}, Lⁱ⁺¹ = LⁱL for i≥0. Then L* = ⋃ᵢ₌₀^∞ Lⁱ (Kleene star), and L⁺ = ⋃ᵢ₌₁^∞ Lⁱ = L·L* (positive closure). Since ε ∈ L⁰ ⊆ L*, L* = L⁺ ∪ {ε} — the star is just the positive closure with ε thrown back in." },
+    { id: "L2-4", lec: "L2", q: "How does Σ* itself relate to the Kleene star construction?", a: "Σ* is exactly L* for L=Σ — every string over Σ is Σ repeated zero or more times. Computing ‘the set of all strings over Σ’ was a Kleene star all along." },
+    { id: "L2-5", lec: "L2", q: "Define what it means for a set S to be closed under an operation, and separately, the closure of S under that operation.", a: "S is closed under an operation if applying it to element(s) of S never produces a result outside S. The closure of S under an operation is the smallest superset of S that is closed under it — keep applying the operation to whatever you have, and collect everything reachable." },
+    { id: "L2-6", lec: "L2", q: "Two different ideas both get called ‘closure’ — the closure operator and a closure property. What's the difference?", a: "The closure operator starts from one set and builds a new (possibly larger) one — L* is the closure operator applied to L. A closure property is a yes/no fact about a whole class of sets: does applying an operation to members of the class always land back inside the class? ‘The regular languages are closed under union’ builds nothing new — it just asserts L₁∪L₂ is already regular whenever L₁,L₂ are." },
+    { id: "L2-7", lec: "L2", q: "List the standard language operations whose closure properties matter for every language class built later in this course.", a: "Union L₁∪L₂, intersection L₁∩L₂, complement L̄ = Σ*∖L, concatenation L₁L₂ = {uv : u∈L₁, v∈L₂}, reversal Lᴿ = {wᴿ : w∈L}, and Kleene star / positive closure L*, L⁺." },
+    { id: "L2-8", lec: "L2", q: "Is an arbitrary language L ⊆ Σ* automatically closed under concatenation? Check L={a} over Σ={a,b}.", a: "No — aa ∉ L, since L only contains the single string a. Arbitrary languages generally aren't closed under their own operations; that's exactly why the Kleene star construction (build the smallest superset that IS closed) is needed in the first place." },
+    { id: "L2-9", lec: "L2", q: "L₁={a}* and L₂={b}* — what does L₁L₂ look like, and why does the order matter?", a: "L₁L₂ = {aⁱbʲ : i,j≥0} — some number of a's (possibly zero) followed by some number of b's (possibly zero), never a b before an a, since L₁ always contributes the first piece. Swap the order to L₂L₁ and you'd get b's-then-a's instead — concatenation of languages is not commutative, same as it isn't for individual strings." },
+    { id: "L2-10", lec: "L2", q: "Is the class of finite languages over a fixed Σ closed under Kleene star?", a: "No — for any nonempty L ≠ {ε}, L* is infinite (it contains Lⁱ for every i≥0, and each power keeps adding new strings once L has some string of length ≥1). A single finite language's star escapes the class of finite languages entirely." },
+
+    // ---------------- L3 ----------------
+    { id: "L3-1", lec: "L3", q: "Define a recognizer and a generator — the two dual ways to specify a language.", a: "A recognizer (automaton) is a machine M that takes a string w and outputs accept or reject; it defines L(M) = {w : M accepts w}. A generator (grammar or regular expression) is a device G that produces strings by rule, with no input to read; it defines L(G) = {w : G can generate w}." },
+    { id: "L3-2", lec: "L3", q: "Give the recursive definition of a regular expression over Σ — base cases.", a: "∅ is a regular expression with L(∅)=∅. ε is a regular expression with L(ε)={ε}. For each a∈Σ, a is a regular expression with L(a)={a}." },
+    { id: "L3-3", lec: "L3", q: "Give the recursive definition of a regular expression over Σ — inductive cases.", a: "If R₁,R₂ are regular expressions, so are: (R₁|R₂) with L(R₁|R₂)=L(R₁)∪L(R₂); (R₁R₂) with L(R₁R₂)=L(R₁)L(R₂); and (R₁)* with L((R₁)*)=L(R₁)*. Nothing else is a regular expression." },
+    { id: "L3-4", lec: "L3", q: "The regex (0|1)*0 is meant for ‘strings ending in 0.’ Why is it actually a superset of ‘binary encodings of even numbers with no leading zero’?", a: "It also accepts strings with leading zeros, like 00 or 0100, which canonical (no-leading-zero) numerals never have. Restricting to canonical even numerals needs 0 | 1(0|1)*0 instead — the leading-1-or-bare-0 piece rules out leading zeros." },
+    { id: "L3-5", lec: "L3", q: "Write a regular expression for ‘strings over {a,b} with an even number of a's’ (zero counts as even).", a: "(b*ab*ab*)* — each single pass through the star consumes exactly two a's (with any run of b's around and between them), so the total count of a's stays even no matter how many passes fire." },
+    { id: "L3-6", lec: "L3", q: "Give the formal 4-tuple definition of a grammar.", a: "G = (V, Σ, P, S): V a finite set of variables (non-terminals, never present in a finished string), Σ a finite set of terminals with V∩Σ=∅, P a finite set of production rules α→β (α containing at least one variable), and S∈V the start symbol." },
+    { id: "L3-7", lec: "L3", q: "A grammar's general production rule is α→β, with α any string containing at least one variable. What restriction on α defines a context-free grammar?", a: "α is restricted to a single variable, A∈V — every rule has the shape A→β. That single-variable restriction is exactly what's given up (in exchange for extra generative power) in the more general grammar classes met later." },
+    { id: "L3-8", lec: "L3", q: "Why does allowing α to be a whole string — not just one variable — give context-sensitive and unrestricted grammars extra power over context-free ones?", a: "A rule can then rewrite a variable differently depending on what surrounds it — the left-hand context. A context-free rule A→β fires the same way no matter what's around A; a general rule can react to its neighbors." },
+    { id: "L3-9", lec: "L3", q: "The arithmetic-expression grammar E→E+E|E*E|(E)|a is deliberately left ambiguous. What exactly makes a+a*a ambiguous under it?", a: "Nothing in the rules says whether + or * groups first, so a+a*a has more than one valid parse — the same dangling-else disease, now showing up in a grammar's own rule shape instead of a compiler convention." },
+    { id: "L3-10", lec: "L3", q: "Design pattern — write production rules for ‘any number of a's followed by any number of b's, independently’ (matching the regex a*b*).", a: "S → aS | T, T → bT | ε — one piece generates all the a's, then hands off to a piece generating all the b's, with no going back. The grammar's two-stage shape mirrors the regex's own a*b* structure directly." },
+
+    // ---------------- L4 ----------------
+    { id: "L4-1", lec: "L4", q: "State the Type 0 (unrestricted / recursively enumerable) production rule shape.", a: "α→β, with α ∈ (V∪Σ)*V(V∪Σ)* (any string containing at least one variable) and β ∈ (V∪Σ)* — no further restriction beyond a grammar's own general definition." },
+    { id: "L4-2", lec: "L4", q: "State the Type 1 (context-sensitive) production rule shape.", a: "α→β with |α| ≤ |β| — rules never shrink the string — except that S→ε is allowed if S never appears on the right-hand side of any rule." },
+    { id: "L4-3", lec: "L4", q: "State the Type 2 (context-free) production rule shape.", a: "A→β, with A∈V a single variable on the left — no constraint on β beyond being a string of variables and/or terminals." },
+    { id: "L4-4", lec: "L4", q: "State the Type 3 (regular) production rule shape.", a: "A→aB or A→a, with A,B∈V and a∈Σ — Type 2, further restricted so the right-hand side has at most one variable, and it must sit at the end." },
+    { id: "L4-5", lec: "L4", q: "State the containment chain among the four Chomsky hierarchy classes.", a: "Regular ⊊ Context-free ⊊ Context-sensitive ⊊ Recursively enumerable — each restriction is strictly tighter than the last, and the language classes nest the same way." },
+    { id: "L4-6", lec: "L4", q: "Checking a grammar's rules P against the four shapes tells you the grammar's type. Why is that only an upper bound on the language's true type?", a: "It tells you this particular grammar is at least this general — but the language itself might be simpler, generated by some other grammar that fits a tighter type. Pinning down a language's tightest type also needs ruling out every simpler type having its own working grammar, usually via a pumping lemma." },
+    { id: "L4-7", lec: "L4", q: "Worked pattern — S→aSb|ε has a single-variable left-hand side, so it looks like it could be Type 3. Why does it fail the regular shape?", a: "S→aSb puts a terminal both before AND after the variable — not the A→aB / A→a shape, which allows at most one variable, and only at the very end. It's Type 2 (context-free), just not witnessed as Type 3 by this particular grammar." },
+    { id: "L4-8", lec: "L4", q: "Worked pattern — a grammar has rules like CB→BC, aB→ab (two symbols on the left-hand side). Why does that rule out Type 2, and what then decides Type 1 versus Type 0?", a: "Type 2 insists on a single variable on the left, so any 2-symbol left-hand side disqualifies it immediately. Whether it's Type 1 or Type 0 then comes down to length: if every rule has |RHS|≥|LHS| (never shrinks the string), it's context-sensitive (Type 1); the moment even one rule shrinks the string, it drops straight to Type 0 — no other check needed." },
+    { id: "L4-9", lec: "L4", q: "Why does confirming the copy language {ww} needs a context-sensitive grammar (not a context-free one) come down to a shape argument rather than a specific rule set?", a: "Confirming the second half truly repeats the first means comparing a symbol against its counterpart across the string — that needs left-hand-side context spanning more than one symbol, ruling out Type 2's single-variable restriction, while never needing to shrink the string, which fits comfortably inside Type 1's length constraint." },
+    { id: "L4-10", lec: "L4", q: "Skill check — S→aSa|bSb|ε builds strings from ‘two copies’ the same loose way {ww} does, yet it's context-free where a general {ww} grammar isn't. What does this grammar get to avoid checking?", a: "It never compares an arbitrary symbol against its counterpart across an unbounded gap — each rule commits to matching the same fixed symbol on both ends in the very same step (aSa or bSb), so the matching is local to one rule application, not a long-distance comparison the way verifying w=w in {ww} would require." }
+  ];
+
+  // ---------------- state ----------------
+  var knownIds = loadKnown();
+  var state = {
+    deckFilter: "all",
+    order: [],   // array of ids in display order for current filter
+    pos: 0,
+    flipped: false,
+    shuffled: false
+  };
+
+  function loadKnown() {
+    try {
+      var raw = localStorage.getItem("formal-languages-flashcards-known-v1");
+      return new Set(raw ? JSON.parse(raw) : []);
+    } catch (e) { return new Set(); }
+  }
+  function saveKnown() {
+    try { localStorage.setItem("formal-languages-flashcards-known-v1", JSON.stringify(Array.from(knownIds))); }
+    catch (e) { /* ignore */ }
+  }
+
+  var byId = {};
+  CARDS.forEach(function (c) { byId[c.id] = c; });
+
+  function idsForFilter(filter) {
+    return CARDS.filter(function (c) { return filter === "all" || c.lec === filter; })
+                .map(function (c) { return c.id; });
+  }
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function rebuildOrder() {
+    var ids = idsForFilter(state.deckFilter);
+    state.order = state.shuffled ? shuffle(ids) : ids;
+    state.pos = 0;
+    state.flipped = false;
+  }
+
+  // ---------------- DOM refs ----------------
+  var el = {
+    deckSelect: document.getElementById("deck-select"),
+    statText: document.getElementById("stat-text"),
+    shuffleBtn: document.getElementById("shuffle-btn"),
+    positionText: document.getElementById("position-text"),
+    deckTitleText: document.getElementById("deck-title-text"),
+    card: document.getElementById("card"),
+    frontLec: document.getElementById("front-lec"),
+    frontTopic: document.getElementById("front-topic"),
+    frontText: document.getElementById("front-text"),
+    backText: document.getElementById("back-text"),
+    prevBtn: document.getElementById("prev-btn"),
+    nextBtn: document.getElementById("next-btn"),
+    flipBtn: document.getElementById("flip-btn"),
+    knowBtn: document.getElementById("know-btn"),
+    dots: document.getElementById("dots")
+  };
+
+  function buildDeckSelect() {
+    var opts = [];
+    opts.push({ value: "all", label: "All lectures · " + CARDS.length + " cards" });
+    LECTURES.forEach(function (l) {
+      var count = CARDS.filter(function (c) { return c.lec === l.code; }).length;
+      opts.push({ value: l.code, label: l.code + " · " + l.title + " · " + count });
+    });
+    el.deckSelect.innerHTML = opts.map(function (o) {
+      return '<option value="' + o.value + '">' + o.label + "</option>";
+    }).join("");
+  }
+
+  function currentCard() {
+    var id = state.order[state.pos];
+    return byId[id];
+  }
+
+  function masteredCountInDeck() {
+    var n = 0;
+    state.order.forEach(function (id) { if (knownIds.has(id)) n++; });
+    return n;
+  }
+
+  function render() {
+    var card = currentCard();
+    if (!card) return;
+
+    el.frontLec.textContent = card.lec;
+    el.frontTopic.textContent = TITLE_BY_CODE[card.lec];
+    el.frontText.textContent = card.q;
+    el.backText.textContent = card.a;
+
+    el.card.classList.toggle("flipped", state.flipped);
+
+    el.positionText.innerHTML = "&rarr; card " + (state.pos + 1) + " of " + state.order.length;
+    el.deckTitleText.textContent = state.deckFilter === "all" ? "all lectures" : state.deckFilter;
+
+    el.statText.textContent = masteredCountInDeck() + "/" + state.order.length + " mastered";
+
+    var known = knownIds.has(card.id);
+    el.knowBtn.setAttribute("aria-pressed", known ? "true" : "false");
+    el.knowBtn.innerHTML = (known
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Mastered'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Got it');
+
+    renderDots();
+  }
+
+  function renderDots() {
+    el.dots.innerHTML = "";
+    state.order.forEach(function (id, i) {
+      var b = document.createElement("button");
+      b.className = "dot" + (knownIds.has(id) ? " known" : "") + (i === state.pos ? " current" : "");
+      b.setAttribute("aria-label", "Go to card " + (i + 1));
+      b.addEventListener("click", function () {
+        state.pos = i;
+        state.flipped = false;
+        render();
+      });
+      el.dots.appendChild(b);
+    });
+  }
+
+  function goTo(delta) {
+    var n = state.order.length;
+    state.pos = (state.pos + delta + n) % n;
+    state.flipped = false;
+    render();
+  }
+
+  function toggleFlip() {
+    state.flipped = !state.flipped;
+    render();
+  }
+
+  function toggleKnown() {
+    var card = currentCard();
+    if (knownIds.has(card.id)) knownIds.delete(card.id);
+    else knownIds.add(card.id);
+    saveKnown();
+    render();
+  }
+
+  // ---------------- wire up ----------------
+  buildDeckSelect();
+  rebuildOrder();
+  render();
+
+  el.deckSelect.addEventListener("change", function () {
+    state.deckFilter = el.deckSelect.value;
+    rebuildOrder();
+    render();
+  });
+
+  el.shuffleBtn.addEventListener("click", function () {
+    state.shuffled = !state.shuffled;
+    el.shuffleBtn.setAttribute("aria-pressed", state.shuffled ? "true" : "false");
+    el.shuffleBtn.lastChild.textContent = state.shuffled ? " Shuffled" : " Shuffle";
+    rebuildOrder();
+    render();
+  });
+
+  el.prevBtn.addEventListener("click", function () { goTo(-1); });
+  el.nextBtn.addEventListener("click", function () { goTo(1); });
+  el.flipBtn.addEventListener("click", toggleFlip);
+  el.knowBtn.addEventListener("click", toggleKnown);
+  el.card.addEventListener("click", toggleFlip);
+  el.card.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleFlip(); }
+  });
+
+  document.addEventListener("keydown", function (e) {
+    var tag = (e.target && e.target.tagName) || "";
+    if (tag === "SELECT" || tag === "INPUT" || tag === "TEXTAREA") return;
+    if (e.key === "ArrowLeft") { goTo(-1); }
+    else if (e.key === "ArrowRight") { goTo(1); }
+    else if (e.key === " ") { e.preventDefault(); toggleFlip(); }
+    else if (e.key === "k" || e.key === "K") { toggleKnown(); }
+  });
+})();
+</script>
+</body>
+</html>
