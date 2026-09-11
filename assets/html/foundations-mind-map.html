@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foundations Mind Map</title>
+<meta name="description" content="A radial concept map of Formal Languages — alphabets and strings, closure and algebra, specifying a language, and the Chomsky hierarchy.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%B1%3C/text%3E%3C/svg%3E">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #f6f1f4;
+    --surface: #ffffff;
+    --surface-2: #fbf6f9;
+    --ink: #241f2e;
+    --ink-soft: #6d6278;
+    --ink-faint: #a89cae;
+    --line: #e6dce3;
+    --accent: #d92d78;
+    --c1: #1f7a8c;
+    --c2: #a8720f;
+    --c3: #6a4fbf;
+    --c4: #c1531f;
+    --shadow: 220 30% 20%;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17141c;
+      --surface: #201b27;
+      --surface-2: #262030;
+      --ink: #f1ecf3;
+      --ink-soft: #b3a7bd;
+      --ink-faint: #6f6478;
+      --line: #362e3f;
+      --accent: #ff6fa8;
+      --c1: #5ec8e0;
+      --c2: #e0a94a;
+      --c3: #b3a0f0;
+      --c4: #ff9563;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17141c;
+    --surface: #201b27;
+    --surface-2: #262030;
+    --ink: #f1ecf3;
+    --ink-soft: #b3a7bd;
+    --ink-faint: #6f6478;
+    --line: #362e3f;
+    --accent: #ff6fa8;
+    --c1: #5ec8e0;
+    --c2: #e0a94a;
+    --c3: #b3a0f0;
+    --c4: #ff9563;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex;
+    justify-content: center;
+  }
+  .page {
+    width: 100%;
+    max-width: 980px;
+    padding: 2.5rem 1.25rem 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  header { display: flex; flex-direction: column; gap: 0.35rem; }
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  h1 {
+    margin: 0;
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(1.7rem, 4.5vw, 2.2rem);
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+  header p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.94rem;
+    line-height: 1.5;
+    max-width: 62ch;
+  }
+
+  figure { margin: 0; display: flex; flex-direction: column; gap: 0.7rem; }
+  .map-frame {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 0.5rem;
+    box-shadow: 0 1px 2px hsl(var(--shadow) / 0.06), 0 10px 28px hsl(var(--shadow) / 0.08);
+  }
+  svg.mindmap { display: block; width: 100%; height: auto; }
+  .orbit { fill: none; stroke: currentColor; stroke-opacity: 0.08; stroke-dasharray: 2 6; }
+  .branch-link { fill: none; stroke-width: 2; opacity: 0.55; }
+  .leaf-link { fill: none; stroke-width: 1.3; opacity: 0.38; }
+  .leaf-dot { opacity: 0.9; }
+  .branch-label {
+    font-family: "Public Sans", sans-serif;
+    font-weight: 700;
+    font-size: 16.5px;
+    dominant-baseline: middle;
+  }
+  .leaf-label {
+    font-family: "Public Sans", sans-serif;
+    font-weight: 500;
+    font-size: 13.5px;
+    dominant-baseline: middle;
+  }
+  .center-ring { fill: var(--surface-2); stroke: var(--accent); stroke-width: 2; }
+  .center-text {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600;
+    font-size: 23px;
+    fill: var(--ink);
+    text-anchor: middle;
+  }
+
+  figcaption {
+    color: var(--ink-soft);
+    font-size: 0.88rem;
+    line-height: 1.5;
+    max-width: 68ch;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.1rem;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 0.45em; }
+  .legend i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; }
+
+  footer {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    text-align: center;
+  }
+
+  .disclaimer {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    color: var(--ink-soft);
+    padding: 0.7rem 0.9rem;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+  .disclaimer .disclaimer-icon { flex: none; font-size: 1rem; line-height: 1.45; }
+  .disclaimer strong { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header>
+    <div class="eyebrow">Theory of Computation &middot; ODD 2026 &middot; Foundations</div>
+    <h1>Formal Languages</h1>
+    <p>How the foundational building blocks assemble into the Chomsky hierarchy &mdash; for
+      orientation and review, not first-time reading. Pair this with the lecture notes for the
+      &ldquo;why,&rdquo; and the flashcards for recall.</p>
+  </header>
+
+  <figure>
+    <div class="map-frame">
+      <svg class="mindmap" viewBox="-150 -60 1200 1020" role="img"
+        aria-label="Mind map: Formal Languages, with four branches — Building Blocks, Closure and Algebra, Specifying L, and the Chomsky Hierarchy — each carrying four leaf concepts.">
+        <circle class="orbit" cx="450" cy="450" r="205" />
+        <circle class="orbit" cx="450" cy="450" r="372" />
+
+        <path class="branch-link" d="M 450.0 410.0 L 450.0 245.0" stroke="var(--c1)" />
+        <path class="leaf-link" d="M 450.0 245.0 Q 342.9 275.2 255.6 132.8" stroke="var(--c1)" />
+        <path class="leaf-link" d="M 450.0 245.0 Q 412.6 248.4 382.2 84.2" stroke="var(--c1)" />
+        <path class="leaf-link" d="M 450.0 245.0 Q 487.4 248.4 517.8 84.2" stroke="var(--c1)" />
+        <path class="leaf-link" d="M 450.0 245.0 Q 557.1 275.2 644.4 132.8" stroke="var(--c1)" />
+        <path class="branch-link" d="M 558.0 450.0 L 655.0 450.0" stroke="var(--c2)" />
+        <path class="leaf-link" d="M 655.0 450.0 Q 624.8 342.9 767.2 255.6" stroke="var(--c2)" />
+        <path class="leaf-link" d="M 655.0 450.0 Q 651.6 412.6 815.8 382.2" stroke="var(--c2)" />
+        <path class="leaf-link" d="M 655.0 450.0 Q 651.6 487.4 815.8 517.8" stroke="var(--c2)" />
+        <path class="leaf-link" d="M 655.0 450.0 Q 624.8 557.1 767.2 644.4" stroke="var(--c2)" />
+        <path class="branch-link" d="M 450.0 490.0 L 450.0 655.0" stroke="var(--c3)" />
+        <path class="leaf-link" d="M 450.0 655.0 Q 557.1 624.8 644.4 767.2" stroke="var(--c3)" />
+        <path class="leaf-link" d="M 450.0 655.0 Q 487.4 651.6 517.8 815.8" stroke="var(--c3)" />
+        <path class="leaf-link" d="M 450.0 655.0 Q 412.6 651.6 382.2 815.8" stroke="var(--c3)" />
+        <path class="leaf-link" d="M 450.0 655.0 Q 342.9 624.8 255.6 767.2" stroke="var(--c3)" />
+        <path class="branch-link" d="M 342.0 450.0 L 245.0 450.0" stroke="var(--c4)" />
+        <path class="leaf-link" d="M 245.0 450.0 Q 275.2 557.1 132.8 644.4" stroke="var(--c4)" />
+        <path class="leaf-link" d="M 245.0 450.0 Q 248.4 487.4 84.2 517.8" stroke="var(--c4)" />
+        <path class="leaf-link" d="M 245.0 450.0 Q 248.4 412.6 84.2 382.2" stroke="var(--c4)" />
+        <path class="leaf-link" d="M 245.0 450.0 Q 275.2 342.9 132.8 255.6" stroke="var(--c4)" />
+
+        <ellipse class="center-ring" cx="450" cy="450" rx="108" ry="40" />
+        <text class="center-text" x="450" y="440">
+          <tspan x="450" dy="0">Formal</tspan>
+          <tspan x="450" dy="24">Languages</tspan>
+        </text>
+
+        <circle class="branch-dot" cx="450.0" cy="245.0" r="7" fill="var(--c1)" />
+        <text class="branch-label" x="460.0" y="245.0" text-anchor="start" fill="var(--c1)">Building Blocks</text>
+        <circle class="branch-dot" cx="655.0" cy="450.0" r="7" fill="var(--c2)" />
+        <text class="branch-label" x="665.0" y="450.0" text-anchor="start" fill="var(--c2)">Closure &amp; Algebra</text>
+        <circle class="branch-dot" cx="450.0" cy="655.0" r="7" fill="var(--c3)" />
+        <text class="branch-label" x="460.0" y="655.0" text-anchor="start" fill="var(--c3)">Specifying L</text>
+        <circle class="branch-dot" cx="245.0" cy="450.0" r="7" fill="var(--c4)" />
+        <text class="branch-label" x="235.0" y="450.0" text-anchor="end" fill="var(--c4)">Chomsky Hierarchy</text>
+
+        <circle class="leaf-dot" cx="255.6" cy="132.8" r="4" fill="var(--c1)" />
+        <text class="leaf-label" x="245.6" y="132.8" text-anchor="end" fill="currentColor">Alphabet &#931;</text>
+        <circle class="leaf-dot" cx="382.2" cy="84.2" r="4" fill="var(--c1)" />
+        <text class="leaf-label" x="372.2" y="84.2" text-anchor="end" fill="currentColor">String w, |w|</text>
+        <circle class="leaf-dot" cx="517.8" cy="84.2" r="4" fill="var(--c1)" />
+        <text class="leaf-label" x="527.8" y="84.2" text-anchor="start" fill="currentColor">Language L&#8838;&#931;*</text>
+        <circle class="leaf-dot" cx="644.4" cy="132.8" r="4" fill="var(--c1)" />
+        <text class="leaf-label" x="654.4" y="132.8" text-anchor="start" fill="currentColor">Decision problem</text>
+        <circle class="leaf-dot" cx="767.2" cy="255.6" r="4" fill="var(--c2)" />
+        <text class="leaf-label" x="777.2" y="255.6" text-anchor="start" fill="currentColor">Concatenation</text>
+        <circle class="leaf-dot" cx="815.8" cy="382.2" r="4" fill="var(--c2)" />
+        <text class="leaf-label" x="825.8" y="382.2" text-anchor="start" fill="currentColor">Kleene star L*</text>
+        <circle class="leaf-dot" cx="815.8" cy="517.8" r="4" fill="var(--c2)" />
+        <text class="leaf-label" x="825.8" y="517.8" text-anchor="start" fill="currentColor">Positive closure L+</text>
+        <circle class="leaf-dot" cx="767.2" cy="644.4" r="4" fill="var(--c2)" />
+        <text class="leaf-label" x="777.2" y="644.4" text-anchor="start" fill="currentColor">Closure property</text>
+        <circle class="leaf-dot" cx="644.4" cy="767.2" r="4" fill="var(--c3)" />
+        <text class="leaf-label" x="654.4" y="767.2" text-anchor="start" fill="currentColor">Recognizer</text>
+        <circle class="leaf-dot" cx="517.8" cy="815.8" r="4" fill="var(--c3)" />
+        <text class="leaf-label" x="527.8" y="815.8" text-anchor="start" fill="currentColor">Generator</text>
+        <circle class="leaf-dot" cx="382.2" cy="815.8" r="4" fill="var(--c3)" />
+        <text class="leaf-label" x="372.2" y="815.8" text-anchor="end" fill="currentColor">Regular expression</text>
+        <circle class="leaf-dot" cx="255.6" cy="767.2" r="4" fill="var(--c3)" />
+        <text class="leaf-label" x="245.6" y="767.2" text-anchor="end" fill="currentColor">Grammar (V,&#931;,P,S)</text>
+        <circle class="leaf-dot" cx="132.8" cy="644.4" r="4" fill="var(--c4)" />
+        <text class="leaf-label" x="122.8" y="644.4" text-anchor="end" fill="currentColor">Type 3 &#8226; Regular</text>
+        <circle class="leaf-dot" cx="84.2" cy="517.8" r="4" fill="var(--c4)" />
+        <text class="leaf-label" x="74.2" y="517.8" text-anchor="end" fill="currentColor">Type 2 &#8226; Context-free</text>
+        <circle class="leaf-dot" cx="84.2" cy="382.2" r="4" fill="var(--c4)" />
+        <text class="leaf-label" x="74.2" y="382.2" text-anchor="end" fill="currentColor">Type 1 &#8226; Context-sensitive</text>
+        <circle class="leaf-dot" cx="132.8" cy="255.6" r="4" fill="var(--c4)" />
+        <text class="leaf-label" x="122.8" y="255.6" text-anchor="end" fill="currentColor">Type 0 &#8226; Unrestricted</text>
+      </svg>
+    </div>
+    <figcaption>How the foundational building blocks assemble into the Chomsky hierarchy: alphabets
+      and strings become languages, languages get specified two dual ways (a machine that reads, or
+      a device that writes), and grammars sort into four nested classes purely by the shape of their
+      own production rules.</figcaption>
+  </figure>
+  <div class="legend">
+    <span><i style="background:var(--c1)"></i>Building Blocks</span>
+    <span><i style="background:var(--c2)"></i>Closure &amp; Algebra</span>
+    <span><i style="background:var(--c3)"></i>Specifying L</span>
+    <span><i style="background:var(--c4)"></i>Chomsky Hierarchy</span>
+  </div>
+
+  <footer>for the full definition behind any leaf, see the lecture notes or the flashcard deck &middot; this map is for orientation, not first-time reading</footer>
+
+  <div class="disclaimer" role="note">
+    <span class="disclaimer-icon" aria-hidden="true">⚠️</span>
+    <span><strong>AI-generated study aid.</strong> This mind map was generated with AI assistance and has been reviewed, but it may still contain small errors. If you spot one, please report it so it can be corrected.</span>
+  </div>
+</div>
+
+</body>
+</html>

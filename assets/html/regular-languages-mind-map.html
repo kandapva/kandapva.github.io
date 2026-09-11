@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regular Languages Mind Map</title>
+<meta name="description" content="A radial concept map of Regular Languages &amp; Automata — DFAs, NFAs and ε-NFAs, building and minimizing a DFA, the regex-automata bridge, and proving non-regularity.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%81%3C/text%3E%3C/svg%3E">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #f6f1f4;
+    --surface: #ffffff;
+    --surface-2: #fbf6f9;
+    --ink: #241f2e;
+    --ink-soft: #6d6278;
+    --ink-faint: #a89cae;
+    --line: #e6dce3;
+    --accent: #d92d78;
+    --c1: #1f7a8c;
+    --c2: #a8720f;
+    --c3: #6a4fbf;
+    --c4: #c1531f;
+    --c5: #1f8f6d;
+    --shadow: 220 30% 20%;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17141c;
+      --surface: #201b27;
+      --surface-2: #262030;
+      --ink: #f1ecf3;
+      --ink-soft: #b3a7bd;
+      --ink-faint: #6f6478;
+      --line: #362e3f;
+      --accent: #ff6fa8;
+      --c1: #5ec8e0;
+      --c2: #e0a94a;
+      --c3: #b3a0f0;
+      --c4: #ff9563;
+      --c5: #52d8ab;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17141c;
+    --surface: #201b27;
+    --surface-2: #262030;
+    --ink: #f1ecf3;
+    --ink-soft: #b3a7bd;
+    --ink-faint: #6f6478;
+    --line: #362e3f;
+    --accent: #ff6fa8;
+    --c1: #5ec8e0;
+    --c2: #e0a94a;
+    --c3: #b3a0f0;
+    --c4: #ff9563;
+    --c5: #52d8ab;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex;
+    justify-content: center;
+  }
+  .page {
+    width: 100%;
+    max-width: 980px;
+    padding: 2.5rem 1.25rem 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  header { display: flex; flex-direction: column; gap: 0.35rem; }
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  h1 {
+    margin: 0;
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(1.7rem, 4.5vw, 2.2rem);
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+  header p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.94rem;
+    line-height: 1.5;
+    max-width: 62ch;
+  }
+
+  figure { margin: 0; display: flex; flex-direction: column; gap: 0.7rem; }
+  .map-frame {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 0.5rem;
+    box-shadow: 0 1px 2px hsl(var(--shadow) / 0.06), 0 10px 28px hsl(var(--shadow) / 0.08);
+  }
+  svg.mindmap { display: block; width: 100%; height: auto; }
+  .orbit { fill: none; stroke: currentColor; stroke-opacity: 0.08; stroke-dasharray: 2 6; }
+  .branch-link { fill: none; stroke-width: 2; opacity: 0.55; }
+  .leaf-link { fill: none; stroke-width: 1.3; opacity: 0.38; }
+  .leaf-dot { opacity: 0.9; }
+  .branch-label {
+    font-family: "Public Sans", sans-serif;
+    font-weight: 700;
+    font-size: 16.5px;
+    dominant-baseline: middle;
+  }
+  .leaf-label {
+    font-family: "Public Sans", sans-serif;
+    font-weight: 500;
+    font-size: 13.5px;
+    dominant-baseline: middle;
+  }
+  .center-ring { fill: var(--surface-2); stroke: var(--accent); stroke-width: 2; }
+  .center-text {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600;
+    font-size: 23px;
+    fill: var(--ink);
+    text-anchor: middle;
+  }
+
+  figcaption {
+    color: var(--ink-soft);
+    font-size: 0.88rem;
+    line-height: 1.5;
+    max-width: 68ch;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.1rem;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 0.45em; }
+  .legend i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; }
+
+  footer {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    text-align: center;
+  }
+
+  .disclaimer {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    color: var(--ink-soft);
+    padding: 0.7rem 0.9rem;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+  .disclaimer .disclaimer-icon { flex: none; font-size: 1rem; line-height: 1.45; }
+  .disclaimer strong { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header>
+    <div class="eyebrow">Theory of Computation &middot; ODD 2026 &middot; Regular Languages &amp; Automata</div>
+    <h1>Regular Languages</h1>
+    <p>How the regular-language toolkit fits together &mdash; for orientation and review, not
+      first-time reading. Pair this with the lecture notes for the &ldquo;why,&rdquo; and the
+      flashcards for recall.</p>
+  </header>
+
+  <figure>
+    <div class="map-frame">
+      <svg class="mindmap" viewBox="-150 -60 1200 1020" role="img"
+        aria-label="Mind map: Regular Languages, with five branches — Machines, Building a DFA, Minimization, Regex to Automata, and Proving Non-Regularity — each carrying four leaf concepts.">
+        <circle class="orbit" cx="450" cy="450" r="205" />
+        <circle class="orbit" cx="450" cy="450" r="372" />
+
+        <path class="branch-link" d="M 450.0 410.0 L 450.0 245.0" stroke="var(--c1)" />
+        <path class="leaf-link" d="M 450.0 245.0 Q 362.7 264.5 291.6 113.4" stroke="var(--c1)" />
+        <path class="leaf-link" d="M 450.0 245.0 Q 420.1 247.2 395.7 82.0" stroke="var(--c1)" />
+        <path class="leaf-link" d="M 450.0 245.0 Q 479.9 247.2 504.3 82.0" stroke="var(--c1)" />
+        <path class="leaf-link" d="M 450.0 245.0 Q 537.3 264.5 608.4 113.4" stroke="var(--c1)" />
+        <path class="branch-link" d="M 531.2 423.6 L 645.0 386.7" stroke="var(--c2)" />
+        <path class="leaf-link" d="M 645.0 386.7 Q 599.4 309.7 721.2 195.3" stroke="var(--c2)" />
+        <path class="leaf-link" d="M 645.0 386.7 Q 633.6 358.8 783.2 284.6" stroke="var(--c2)" />
+        <path class="leaf-link" d="M 645.0 386.7 Q 652.1 415.8 816.8 388.0" stroke="var(--c2)" />
+        <path class="leaf-link" d="M 645.0 386.7 Q 653.4 475.7 819.1 496.6" stroke="var(--c2)" />
+        <path class="branch-link" d="M 478.1 488.6 L 570.5 615.8" stroke="var(--c3)" />
+        <path class="leaf-link" d="M 570.5 615.8 Q 629.6 548.8 776.0 629.2" stroke="var(--c3)" />
+        <path class="leaf-link" d="M 570.5 615.8 Q 593.4 596.5 710.3 715.8" stroke="var(--c3)" />
+        <path class="leaf-link" d="M 570.5 615.8 Q 545.0 631.7 622.3 779.7" stroke="var(--c3)" />
+        <path class="leaf-link" d="M 570.5 615.8 Q 488.4 651.4 519.7 815.4" stroke="var(--c3)" />
+        <path class="branch-link" d="M 421.9 488.6 L 329.5 615.8" stroke="var(--c4)" />
+        <path class="leaf-link" d="M 329.5 615.8 Q 411.6 651.4 380.3 815.4" stroke="var(--c4)" />
+        <path class="leaf-link" d="M 329.5 615.8 Q 355.0 631.7 277.7 779.7" stroke="var(--c4)" />
+        <path class="leaf-link" d="M 329.5 615.8 Q 306.6 596.5 189.7 715.8" stroke="var(--c4)" />
+        <path class="leaf-link" d="M 329.5 615.8 Q 270.4 548.8 124.0 629.2" stroke="var(--c4)" />
+        <path class="branch-link" d="M 368.8 423.6 L 255.0 386.7" stroke="var(--c5)" />
+        <path class="leaf-link" d="M 255.0 386.7 Q 246.6 475.7 80.9 496.6" stroke="var(--c5)" />
+        <path class="leaf-link" d="M 255.0 386.7 Q 247.9 415.8 83.2 388.0" stroke="var(--c5)" />
+        <path class="leaf-link" d="M 255.0 386.7 Q 266.4 358.8 116.8 284.6" stroke="var(--c5)" />
+        <path class="leaf-link" d="M 255.0 386.7 Q 300.6 309.7 178.8 195.3" stroke="var(--c5)" />
+
+        <ellipse class="center-ring" cx="450" cy="450" rx="108" ry="40" />
+        <text class="center-text" x="450" y="440">
+          <tspan x="450" dy="0">Regular</tspan>
+          <tspan x="450" dy="24">Languages</tspan>
+        </text>
+
+        <circle class="branch-dot" cx="450.0" cy="245.0" r="7" fill="var(--c1)" />
+        <text class="branch-label" x="460.0" y="245.0" text-anchor="start" fill="var(--c1)">Machines</text>
+        <circle class="branch-dot" cx="645.0" cy="386.7" r="7" fill="var(--c2)" />
+        <text class="branch-label" x="655.0" y="386.7" text-anchor="start" fill="var(--c2)">Building a DFA</text>
+        <circle class="branch-dot" cx="570.5" cy="615.8" r="7" fill="var(--c3)" />
+        <text class="branch-label" x="580.5" y="615.8" text-anchor="start" fill="var(--c3)">Minimization</text>
+        <circle class="branch-dot" cx="329.5" cy="615.8" r="7" fill="var(--c4)" />
+        <text class="branch-label" x="319.5" y="615.8" text-anchor="end" fill="var(--c4)">Regex &#8596; Automata</text>
+        <circle class="branch-dot" cx="255.0" cy="386.7" r="7" fill="var(--c5)" />
+        <text class="branch-label" x="245.0" y="386.7" text-anchor="end" fill="var(--c5)">Proving Non-Regularity</text>
+
+        <circle class="leaf-dot" cx="291.6" cy="113.4" r="4" fill="var(--c1)" />
+        <text class="leaf-label" x="281.6" y="113.4" text-anchor="end" fill="currentColor">DFA</text>
+        <circle class="leaf-dot" cx="395.7" cy="82.0" r="4" fill="var(--c1)" />
+        <text class="leaf-label" x="385.7" y="82.0" text-anchor="end" fill="currentColor">NFA</text>
+        <circle class="leaf-dot" cx="504.3" cy="82.0" r="4" fill="var(--c1)" />
+        <text class="leaf-label" x="514.3" y="82.0" text-anchor="start" fill="currentColor">&#949;-NFA</text>
+        <circle class="leaf-dot" cx="608.4" cy="113.4" r="4" fill="var(--c1)" />
+        <text class="leaf-label" x="618.4" y="113.4" text-anchor="start" fill="currentColor">Subset construction</text>
+        <circle class="leaf-dot" cx="721.2" cy="195.3" r="4" fill="var(--c2)" />
+        <text class="leaf-label" x="731.2" y="195.3" text-anchor="start" fill="currentColor">Four-step method</text>
+        <circle class="leaf-dot" cx="783.2" cy="284.6" r="4" fill="var(--c2)" />
+        <text class="leaf-label" x="793.2" y="284.6" text-anchor="start" fill="currentColor">Product construction</text>
+        <circle class="leaf-dot" cx="816.8" cy="388.0" r="4" fill="var(--c2)" />
+        <text class="leaf-label" x="826.8" y="388.0" text-anchor="start" fill="currentColor">Complement (swap F)</text>
+        <circle class="leaf-dot" cx="819.1" cy="496.6" r="4" fill="var(--c2)" />
+        <text class="leaf-label" x="829.1" y="496.6" text-anchor="start" fill="currentColor">Dead / trap state</text>
+        <circle class="leaf-dot" cx="776.0" cy="629.2" r="4" fill="var(--c3)" />
+        <text class="leaf-label" x="786.0" y="629.2" text-anchor="start" fill="currentColor">Distinguishable states</text>
+        <circle class="leaf-dot" cx="710.3" cy="715.8" r="4" fill="var(--c3)" />
+        <text class="leaf-label" x="720.3" y="715.8" text-anchor="start" fill="currentColor">Table-filling</text>
+        <circle class="leaf-dot" cx="622.3" cy="779.7" r="4" fill="var(--c3)" />
+        <text class="leaf-label" x="632.3" y="779.7" text-anchor="start" fill="currentColor">Myhill&#8211;Nerode &#8764;L</text>
+        <circle class="leaf-dot" cx="519.7" cy="815.4" r="4" fill="var(--c3)" />
+        <text class="leaf-label" x="529.7" y="815.4" text-anchor="start" fill="currentColor">Minimal DFA</text>
+        <circle class="leaf-dot" cx="380.3" cy="815.4" r="4" fill="var(--c4)" />
+        <text class="leaf-label" x="370.3" y="815.4" text-anchor="end" fill="currentColor">Thompson's construction</text>
+        <circle class="leaf-dot" cx="277.7" cy="779.7" r="4" fill="var(--c4)" />
+        <text class="leaf-label" x="267.7" y="779.7" text-anchor="end" fill="currentColor">&#949;-elimination</text>
+        <circle class="leaf-dot" cx="189.7" cy="715.8" r="4" fill="var(--c4)" />
+        <text class="leaf-label" x="179.7" y="715.8" text-anchor="end" fill="currentColor">Regex &#8594; NFA</text>
+        <circle class="leaf-dot" cx="124.0" cy="629.2" r="4" fill="var(--c4)" />
+        <text class="leaf-label" x="114.0" y="629.2" text-anchor="end" fill="currentColor">NFA &#8594; DFA</text>
+        <circle class="leaf-dot" cx="80.9" cy="496.6" r="4" fill="var(--c5)" />
+        <text class="leaf-label" x="70.9" y="496.6" text-anchor="end" fill="currentColor">Pumping lemma</text>
+        <circle class="leaf-dot" cx="83.2" cy="388.0" r="4" fill="var(--c5)" />
+        <text class="leaf-label" x="73.2" y="388.0" text-anchor="end" fill="currentColor">Adversary game</text>
+        <circle class="leaf-dot" cx="116.8" cy="284.6" r="4" fill="var(--c5)" />
+        <text class="leaf-label" x="106.8" y="284.6" text-anchor="end" fill="currentColor">Pigeonhole on states</text>
+        <circle class="leaf-dot" cx="178.8" cy="195.3" r="4" fill="var(--c5)" />
+        <text class="leaf-label" x="168.8" y="195.3" text-anchor="end" fill="currentColor">Closure-based proof</text>
+      </svg>
+    </div>
+    <figcaption>How the regular-language toolkit fits together: three machines that all recognize the
+      same class (DFA, NFA, &#949;-NFA), the method for building or minimizing one, the bridge that
+      turns a regular expression into an automaton and back, and the one tool &mdash; the pumping
+      lemma &mdash; for proving a language doesn't belong at all.</figcaption>
+  </figure>
+  <div class="legend">
+    <span><i style="background:var(--c1)"></i>Machines</span>
+    <span><i style="background:var(--c2)"></i>Building a DFA</span>
+    <span><i style="background:var(--c3)"></i>Minimization</span>
+    <span><i style="background:var(--c4)"></i>Regex &#8596; Automata</span>
+    <span><i style="background:var(--c5)"></i>Proving Non-Regularity</span>
+  </div>
+
+  <footer>for the full definition behind any leaf, see the lecture notes or the flashcard deck &middot; this map is for orientation, not first-time reading</footer>
+
+  <div class="disclaimer" role="note">
+    <span class="disclaimer-icon" aria-hidden="true">⚠️</span>
+    <span><strong>AI-generated study aid.</strong> This mind map was generated with AI assistance and has been reviewed, but it may still contain small errors. If you spot one, please report it so it can be corrected.</span>
+  </div>
+</div>
+
+</body>
+</html>
